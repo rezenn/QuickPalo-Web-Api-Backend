@@ -1,13 +1,25 @@
-import express from "express";
+import express, { Application, Request, Response } from "express";
+import bodyParser from "body-parser";
+import dotenv from "dotenv";
+import { PORT } from "./configs";
+import { connectDb } from "./database/mongodb";
 
-const app = express();
+dotenv.config();
 
-app.get("/", (req, res) => {
-  return res.status(200).json({ status: "healthy" });
+const app: Application = express();
+
+app.use(bodyParser.json());
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Server is running");
 });
 
-app.listen(4000, () => {
-  console.log("The server is runfning on port 4004");
-});
+async function startServer() {
+  await connectDb();
 
+  app.listen(PORT, () => {
+    console.log(`Server: http://localhost:${PORT}`);
+  });
+}
 
+startServer();
