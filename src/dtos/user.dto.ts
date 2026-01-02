@@ -25,3 +25,7 @@ export const UpdateUserDto = UserSchema.pick({
   email: true,
 }).partial();
 export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
+
+export const CreateAdminSchema = UserSchema.extend({
+  role: z.literal("admin"),
+});
