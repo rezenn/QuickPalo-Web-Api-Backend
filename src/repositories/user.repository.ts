@@ -8,3 +8,35 @@ export interface IUserRepository {
   updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser | null>;
   deleteUser(userId: string): Promise<boolean | null>;
 }
+export class UserRepository implements IUserRepository {
+  async createUser(userData: Partial<IUser>): Promise<IUser> {
+    const user = new UserModel(userData);
+    await user.save();
+    return user;
+  }
+  async getUserByEmail(email: string): Promise<IUser | null> {
+    const user = await UserModel.findOne({ email: email });
+    return user;
+  }
+  async getAllUsers(): Promise<IUser[]> {
+    const users = await UserModel.find({ role: "user" }).select("-password");
+    return users;
+  }
+  async updateUser(
+    userId: string,
+    updateData: Partial<IUser>
+  ): Promise<IUser | null> {
+    const updateUser = await UserModel.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+    return updateUser;
+  }
+  async deleteUser(userId: string): Promise<boolean | null> {
+    const result = await UserModel.findByIdAndDelete(userId);
+    return result ? true : false;
+  }
+  async getUserById(userId: string): Promise<IUser | null> {
+    const user = await UserModel.findById(userId);
+    return user;
+  }
+}
