@@ -22,6 +22,10 @@ export class UserRepository implements IUserRepository {
     const users = await UserModel.find({ role: "user" }).select("-password");
     return users;
   }
+  async getNormalUsers(): Promise<IUser[]> {
+    const users = await UserModel.find({ role: "user" }).select("-password");
+    return users;
+  }
   async updateUser(
     userId: string,
     updateData: Partial<IUser>
