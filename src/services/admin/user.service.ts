@@ -2,6 +2,7 @@ import { UserRepository } from "../../repositories/user.repository";
 import { RegisterUserDto, UpdateUserDto } from "../../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import { HttpError } from "../../errors/http-error";
+import { CreateOrganizationDto } from "../../dtos/organization.dto";
 
 let userRepository = new UserRepository();
 
@@ -61,5 +62,22 @@ export class AdminUserService {
     }
 
     return users;
+  }
+
+  async createOrganization(data: CreateOrganizationDto) {
+    const existingUser = await userRepository.getUserByEmail(data.email);
+    if (existingUser) {
+      throw new HttpError(409, "Email already in use");
+    }
+    const hasedPassword = await bcryptjs.hash(data.password, 10);
+
+    const organization = await userRepository.createUser({
+      fullname: data.fullname,
+      email: data.email,
+      phoneNumber: data.phoneNumber,
+      role: "organization",
+      password: hasedPassword,
+    });
+    return organization;
   }
 }

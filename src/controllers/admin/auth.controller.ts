@@ -2,6 +2,7 @@ import z, { success } from "zod";
 import { Request, Response } from "express";
 import { RegisterUserDto, UpdateUserDto } from "../../dtos/user.dto";
 import { AdminUserService } from "../../services/admin/user.service";
+import { CreateOrganizationDto } from "../../dtos/organization.dto";
 
 let adminUserService = new AdminUserService();
 
@@ -88,6 +89,29 @@ export class AdminUserController {
         success: true,
         data: user,
         message: "User data Updated successfully",
+      });
+    } catch (error: Error | any) {
+      return res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message || "Internal Servicee Error",
+      });
+    }
+  }
+  async createOrganization(req: Request, res: Response) {
+    try {
+      const parsed = CreateOrganizationDto.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({
+          success: false,
+          message: z.prettifyError(parsed.error),
+        });
+      }
+      const org = await adminUserService.createOrganization(parsed.data);
+
+      return res.status(201).json({
+        success: true,
+        message: "Organization created successfully",
+        data: org,
       });
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({

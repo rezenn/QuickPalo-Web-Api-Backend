@@ -10,6 +10,12 @@ let adminUserController = new AdminUserController();
 
 const router = Router();
 
+router.post("/", adminUserController.createUser);
+router.get("/:id", adminUserController.getOneUser);
+router.get("/", adminUserController.getAllUsers);
+router.put("/:id", adminUserController.updateUser);
+router.delete("/:id", adminUserController.deleteUser);
+
 router.get(
   "/dashboard",
   authorizedMiddleware,
@@ -18,12 +24,11 @@ router.get(
     res.status(200).json({ success: true, message: "Welcome to admin" });
   }
 );
-
-// 5 routes
-router.post("/", adminUserController.createUser);
-router.get("/:id", adminUserController.getOneUser);
-router.get("/", adminUserController.getAllUsers);
-router.put("/:id", adminUserController.updateUser);
-router.delete("/:id", adminUserController.deleteUser);
+router.post(
+  "/register-organization",
+  authorizedMiddleware,
+  adminMiddleware,
+  adminUserController.createOrganization
+);
 
 export default router;
