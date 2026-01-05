@@ -4,6 +4,7 @@ import { UserSchema } from "../types/user.type";
 export const RegisterUserDto = UserSchema.pick({
   fullname: true,
   email: true,
+  phoneNumber: true,
   password: true,
   confirmPassword: true,
 }).refine((data) => data.password === data.confirmPassword, {
@@ -29,3 +30,4 @@ export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
 export const CreateAdminSchema = UserSchema.extend({
   role: z.literal("admin"),
 });
+export type createAdminDto = z.infer<typeof CreateAdminSchema>;

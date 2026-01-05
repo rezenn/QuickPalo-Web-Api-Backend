@@ -5,7 +5,7 @@ import { AdminUserService } from "../../services/admin/user.service";
 
 let adminUserService = new AdminUserService();
 
-export class AdminUSerController {
+export class AdminUserController {
   async createUser(req: Request, res: Response) {
     try {
       const parsedData = RegisterUserDto.safeParse(req.body);

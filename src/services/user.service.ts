@@ -29,7 +29,7 @@ export class UserService {
     return newUser;
   }
 
-  async getOneOuser(userId: string) {
+  async getOneUser(userId: string) {
     const user = await userRepository.getUserById(userId);
     if (!user) {
       throw new HttpError(404, "User not found");

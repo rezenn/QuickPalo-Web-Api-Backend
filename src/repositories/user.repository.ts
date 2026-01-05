@@ -19,7 +19,7 @@ export class UserRepository implements IUserRepository {
     return user;
   }
   async getAllUsers(): Promise<IUser[]> {
-    const users = await UserModel.find({ role: "user" }).select("-password");
+    const users = await UserModel.find().select("-password");
     return users;
   }
   async getNormalUsers(): Promise<IUser[]> {

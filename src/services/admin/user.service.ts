@@ -54,7 +54,7 @@ export class AdminUserService {
     return updateUser;
   }
   async getAllUsers() {
-    const users = await userRepository.getNormalUsers();
+    const users = await userRepository.getAllUsers();
 
     if (!users || users.length === 0) {
       return [];
