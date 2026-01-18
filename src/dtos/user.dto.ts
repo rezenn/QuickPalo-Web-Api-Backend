@@ -7,10 +7,12 @@ export const RegisterUserDto = UserSchema.pick({
   phoneNumber: true,
   password: true,
   confirmPassword: true,
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Password do not match",
-  path: ["confirmPassword"],
-});
+})
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Password do not match",
+    path: ["confirmPassword"],
+  })
+  .transform(({ confirmPassword, ...rest }) => rest);
 
 export type RegisterUserDto = z.infer<typeof RegisterUserDto>;
 

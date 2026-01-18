@@ -10,12 +10,6 @@ let adminUserController = new AdminUserController();
 
 const router = Router();
 
-router.post("/", adminUserController.createUser);
-router.get("/:id", adminUserController.getOneUser);
-router.get("/", adminUserController.getAllUsers);
-router.put("/:id", adminUserController.updateUser);
-router.delete("/:id", adminUserController.deleteUser);
-
 router.get(
   "/dashboard",
   authorizedMiddleware,
@@ -31,4 +25,11 @@ router.post(
   adminUserController.createOrganization
 );
 
+router.post("/", adminUserController.createUser);
+router.get("/:id", adminUserController.getOneUser);
+router.get("/", adminUserController.getAllUsers);
+router.put("/:id", adminUserController.updateUser);
+router.delete("/:id", adminUserController.deleteUser);
+
+//
 export default router;

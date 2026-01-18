@@ -12,3 +12,6 @@ export const MONGODB_URI: string =
 
 export const JWT_SECERT: string =
   process.env.JWT_SECERT || "qu1ck_p4l0_org_secret_123";
+
+export const FRONTEND_URL: string =
+  process.env.FRONTEND_URL || "http://localhost:3000";
