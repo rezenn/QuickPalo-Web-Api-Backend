@@ -23,13 +23,17 @@ export const LoginUserDto = z.object({
 
 export type LoginUserDto = z.infer<typeof LoginUserDto>;
 
-export const UpdateUserDto = UserSchema.pick({
-  fullname: true,
-  email: true,
-}).partial();
-export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
+// export const UpdateUserDto = UserSchema.pick({
+//   fullname: true,
+//   email: true,
+//   profileImage: true,
+// }).partial();
+// export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
 
 export const CreateAdminSchema = UserSchema.extend({
   role: z.literal("admin"),
 });
 export type createAdminDto = z.infer<typeof CreateAdminSchema>;
+
+export const UpdateUserDto = UserSchema.partial();
+export type UpdateUserDto = z.infer<typeof UpdateUserDto>;

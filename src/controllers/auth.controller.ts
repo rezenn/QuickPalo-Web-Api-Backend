@@ -76,23 +76,31 @@ export class AuthController {
   async updateUser(req: Request, res: Response) {
     try {
       const userId = req.params.id;
-      const parsed = UpdateUserDto.safeParse(req.body);
-      if (!parsed.success) {
+      if (!userId) {
         return res.status(400).json({
           success: false,
-          message: z.prettifyError(parsed.error),
+          message: "User Id not found",
         });
       }
-      const user = await userService.updateOneUser(userId, parsed.data);
+      const parsedData = UpdateUserDto.safeParse(req.body);
+      if (!parsedData.success) {
+        return res
+          .status(400)
+          .json({ success: false, message: z.prettifyError(parsedData.error) });
+      }
+      if (req.file) {
+        parsedData.data.imageUrl = `/uploads/profile/${req.file.filename}`;
+      }
+      const updateUser = await userService.updateUser(userId, parsedData.data);
       return res.status(200).json({
         success: true,
-        data: user,
-        message: "User data successfully updated",
+        message: "User updated successfully",
+        data: updateUser,
       });
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "internal server error",
       });
     }
   }

@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { AdminUserController } from "../../controllers/admin/auth.controller";
 import {
-  adminMiddleware,
-  authorizedMiddleware,
-} from "../../middlewares/authorizedMiddleware";
+  AdminMiddleware,
+  AuthorizedMiddleware,
+} from "../../middlewares/authorized.middleware";
 import { Request, Response } from "express";
 
 let adminUserController = new AdminUserController();
@@ -12,17 +12,17 @@ const router = Router();
 
 router.get(
   "/dashboard",
-  authorizedMiddleware,
-  adminMiddleware,
+  AuthorizedMiddleware,
+  AdminMiddleware,
   (req: Request, res: Response) => {
     res.status(200).json({ success: true, message: "Welcome to admin" });
-  }
+  },
 );
 router.post(
   "/register-organization",
-  authorizedMiddleware,
-  adminMiddleware,
-  adminUserController.createOrganization
+  AuthorizedMiddleware,
+  AdminMiddleware,
+  adminUserController.createOrganization,
 );
 
 router.post("/", adminUserController.createUser);

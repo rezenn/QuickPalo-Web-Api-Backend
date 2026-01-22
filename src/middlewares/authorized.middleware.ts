@@ -14,10 +14,10 @@ declare global {
 }
 let userRepository = new UserRepository();
 
-export const authorizedMiddleware = async (
+export const AuthorizedMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     const authHeader = req.headers.authorization;
@@ -41,10 +41,10 @@ export const authorizedMiddleware = async (
   }
 };
 
-export const adminMiddleware = async (
+export const AdminMiddleware = async (
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) => {
   try {
     if (!req.user) {

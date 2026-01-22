@@ -6,16 +6,20 @@ import { connectDb } from "./database/mongodb";
 import authRoutes from "./routes/auth.route";
 import adminUserRoutes from "./routes/admin/auth.route";
 import cors from "cors";
+// import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app: Application = express();
 
 let corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:3003"],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
+// app.use(cookieParser());
+
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/auth", adminUserRoutes);
 

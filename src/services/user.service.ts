@@ -50,18 +50,26 @@ export class UserService {
     return result;
   }
 
-  async updateOneUser(userId: string, updateData: UpdateUserDto) {
+  async updateUser(userId: string, data: UpdateUserDto) {
     const user = await userRepository.getUserById(userId);
     if (!user) {
       throw new HttpError(404, "User not found");
     }
-
-    const updateUser = await userRepository.updateUser(userId, updateData);
-    if (!updateUser) {
-      throw new HttpError(500, "Failed to update user");
+    if (user.email !== data.email) {
+      const checkEmail = await userRepository.getUserByEmail(data.email!);
+      if (checkEmail) {
+        throw new HttpError(409, "Email already in use");
+      }
     }
-    return updateUser;
+
+    if (data.password) {
+      const hashedPassword = await bcryptjs.hash(data.password, 10);
+      data.password = hashedPassword;
+    }
+    const updatedUser = await userRepository.updateUser(userId, data);
+    return updatedUser;
   }
+
   async getAllUsers() {
     const users = await userRepository.getNormalUsers();
 
@@ -79,7 +87,7 @@ export class UserService {
     }
     const vaildPassword = await bcryptjs.compare(
       loginData.password,
-      user.password
+      user.password,
     );
 
     if (!vaildPassword) {
@@ -92,7 +100,7 @@ export class UserService {
       role: user.role,
     };
     const token = jwt.sign(payload, JWT_SECERT, {
-      expiresIn: "7d",
+      expiresIn: "30d",
     });
     return { token, user };
   }

@@ -12,10 +12,11 @@ const userMongoSchema: Schema = new Schema(
       enum: ["user", "organization", "admin"],
       default: "user",
     },
+    imageUrl: { type: String, required: false },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export interface IUser extends UserType, Document {
