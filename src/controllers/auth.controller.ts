@@ -75,12 +75,11 @@ export class AuthController {
   }
   async updateUser(req: Request, res: Response) {
     try {
-      const userId = req.params.id;
+      const userId = req.user?._id; // from middlware
       if (!userId) {
-        return res.status(400).json({
-          success: false,
-          message: "User Id not found",
-        });
+        return res
+          .status(400)
+          .json({ success: false, message: "User ID not provided" });
       }
       const parsedData = UpdateUserDto.safeParse(req.body);
       if (!parsedData.success) {
@@ -89,18 +88,19 @@ export class AuthController {
           .json({ success: false, message: z.prettifyError(parsedData.error) });
       }
       if (req.file) {
+        // if new image uploaded through multer
         parsedData.data.imageUrl = `/uploads/profile/${req.file.filename}`;
       }
-      const updateUser = await userService.updateUser(userId, parsedData.data);
+      const updatedUser = await userService.updateUser(userId, parsedData.data);
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
-        data: updateUser,
+        data: updatedUser,
       });
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "internal server error",
+        message: error.message || "Internal Server Error",
       });
     }
   }
