@@ -73,6 +73,7 @@ export class AuthController {
       });
     }
   }
+
   async updateUser(req: Request, res: Response) {
     try {
       const userId = req.user?._id; // from middlware
@@ -96,10 +97,16 @@ export class AuthController {
         parsedData.data,
         req.file,
       );
+      const userObj = updatedUser?.toObject();
+      userObj.imageUrl = userObj.image
+        ? `${req.protocol}://${req.get("host")}/uploads/profile/${userObj.image}`
+        : null;
+      delete userObj.image;
+
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
-        data: updatedUser,
+        data: userObj,
       });
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({

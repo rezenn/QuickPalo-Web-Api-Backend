@@ -58,34 +58,36 @@ export class UserService {
     file?: Express.Multer.File,
   ) {
     const user = await userRepository.getUserById(userId);
-    if (!user) {
-      throw new HttpError(404, "User not found");
-    }
-    // delete old images if new one uploaded
-    if (file && user.imageUrl) {
-      const oldImagePath = path.resolve(
-        process.cwd(),
-        user.imageUrl.replace(/^\/+/, ""),
-      );
+    if (!user) throw new HttpError(404, "User not found");
 
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
+    if (file) {
+      // delete old image if exists
+      if (user.image) {
+        const oldImagePath = path.resolve(
+          process.cwd(),
+          "uploads/profile",
+          user.image,
+        );
+
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
       }
-      data.imageUrl = `/uploads/profile/${file.filename}`;
+
+      // store only filename
+      data.image = file.filename;
     }
-    if (user.email !== data.email) {
-      const checkEmail = await userRepository.getUserByEmail(data.email!);
-      if (checkEmail) {
-        throw new HttpError(409, "Email already in use");
-      }
+
+    if (data.email && user.email !== data.email) {
+      const checkEmail = await userRepository.getUserByEmail(data.email);
+      if (checkEmail) throw new HttpError(409, "Email already in use");
     }
 
     if (data.password) {
-      const hashedPassword = await bcryptjs.hash(data.password, 10);
-      data.password = hashedPassword;
+      data.password = await bcryptjs.hash(data.password, 10);
     }
-    const updatedUser = await userRepository.updateUser(userId, data);
-    return updatedUser;
+
+    return await userRepository.updateUser(userId, data);
   }
 
   async getAllUsers() {
