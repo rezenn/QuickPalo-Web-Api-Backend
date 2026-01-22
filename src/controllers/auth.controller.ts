@@ -87,11 +87,15 @@ export class AuthController {
           .status(400)
           .json({ success: false, message: z.prettifyError(parsedData.error) });
       }
-      if (req.file) {
-        // if new image uploaded through multer
-        parsedData.data.imageUrl = `/uploads/profile/${req.file.filename}`;
-      }
-      const updatedUser = await userService.updateUser(userId, parsedData.data);
+      // if (req.file) {
+      //   // if new image uploaded through multer
+      //   parsedData.data.imageUrl = `/uploads/profile/${req.file.filename}`;
+      // }
+      const updatedUser = await userService.updateUser(
+        userId,
+        parsedData.data,
+        req.file,
+      );
       return res.status(200).json({
         success: true,
         message: "User updated successfully",

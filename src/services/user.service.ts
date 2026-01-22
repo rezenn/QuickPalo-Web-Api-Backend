@@ -6,6 +6,8 @@ import {
   UpdateUserDto,
 } from "../dtos/user.dto";
 import bcryptjs from "bcryptjs";
+import fs from "fs";
+import path from "path";
 import { HttpError } from "../errors/http-error";
 import jwt from "jsonwebtoken";
 import { JWT_SECERT } from "../configs";
@@ -50,10 +52,26 @@ export class UserService {
     return result;
   }
 
-  async updateUser(userId: string, data: UpdateUserDto) {
+  async updateUser(
+    userId: string,
+    data: UpdateUserDto,
+    file?: Express.Multer.File,
+  ) {
     const user = await userRepository.getUserById(userId);
     if (!user) {
       throw new HttpError(404, "User not found");
+    }
+    // delete old images if new one uploaded
+    if (file && user.imageUrl) {
+      const oldImagePath = path.resolve(
+        process.cwd(),
+        user.imageUrl.replace(/^\/+/, ""),
+      );
+
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+      }
+      data.imageUrl = `/uploads/profile/${file.filename}`;
     }
     if (user.email !== data.email) {
       const checkEmail = await userRepository.getUserByEmail(data.email!);
