@@ -12,7 +12,7 @@ const userMongoSchema: Schema = new Schema(
       enum: ["user", "organization", "admin"],
       default: "user",
     },
-    image: { type: String, required: false },
+    profilePicture: { type: String, required: false },
   },
   {
     timestamps: true,

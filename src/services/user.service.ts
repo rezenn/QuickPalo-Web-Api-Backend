@@ -62,11 +62,11 @@ export class UserService {
 
     if (file) {
       // delete old image if exists
-      if (user.image) {
+      if (user.profilePicture) {
         const oldImagePath = path.resolve(
           process.cwd(),
           "uploads/profile",
-          user.image,
+          user.profilePicture,
         );
 
         if (fs.existsSync(oldImagePath)) {
@@ -75,7 +75,7 @@ export class UserService {
       }
 
       // store only filename
-      data.image = file.filename;
+      data.profilePicture = file.filename;
     }
 
     if (data.email && user.email !== data.email) {
