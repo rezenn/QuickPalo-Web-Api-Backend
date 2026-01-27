@@ -5,7 +5,7 @@ import { uploads } from "../middlewares/upload.middleware";
 let authController = new AuthController();
 
 const router = Router();
-
+router.get("/get-user", AuthorizedMiddleware, authController.getUserById);
 router.post("/register", authController.createUser);
 router.post("/login", authController.loginUser);
 router.get("/:id", authController.getOneUser);

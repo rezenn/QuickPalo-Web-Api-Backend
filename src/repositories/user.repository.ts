@@ -15,20 +15,20 @@ export class UserRepository implements IUserRepository {
     return user;
   }
   async getUserByEmail(email: string): Promise<IUser | null> {
-    const user = await UserModel.findOne({ email: email });
+    const user = await UserModel.findOne({ email: email }).select("+password");
     return user;
   }
   async getAllUsers(): Promise<IUser[]> {
-    const users = await UserModel.find().select("-password");
+    const users = await UserModel.find();
     return users;
   }
   async getNormalUsers(): Promise<IUser[]> {
-    const users = await UserModel.find({ role: "user" }).select("-password");
+    const users = await UserModel.find({ role: "user" });
     return users;
   }
   async updateUser(
     userId: string,
-    updateData: Partial<IUser>
+    updateData: Partial<IUser>,
   ): Promise<IUser | null> {
     const updateUser = await UserModel.findByIdAndUpdate(userId, updateData, {
       new: true,

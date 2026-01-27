@@ -3,10 +3,10 @@ import { UserType } from "../types/user.type";
 
 const userMongoSchema: Schema = new Schema(
   {
-    fullname: { type: String, required: true },
+    fullName: { type: String, required: true },
     email: { type: String, required: true },
     phoneNumber: { type: String, required: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     role: {
       type: String,
       enum: ["user", "organization", "admin"],

@@ -106,7 +106,7 @@ export class AuthController {
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
-        data: userObj,
+        data: updatedUser,
       });
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
@@ -136,6 +136,23 @@ export class AuthController {
       return res.status(error.statusCode || 500).json({
         success: false,
         message: error.message || "Internal Server Error",
+      });
+    }
+  }
+
+  async getUserById(req: Request, res: Response) {
+    try {
+      const userId = req.user?._id;
+      const user = await userService.getUserById(userId);
+      return res.status(200).json({
+        success: true,
+        message: "User featched successfully",
+        data: user,
+      });
+    } catch (error: Error | any) {
+      return res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message || "Internal server error",
       });
     }
   }

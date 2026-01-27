@@ -6,6 +6,7 @@ import { connectDb } from "./database/mongodb";
 import authRoutes from "./routes/auth.route";
 import adminUserRoutes from "./routes/admin/auth.route";
 import cors from "cors";
+import path from "path";
 // import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -13,8 +14,10 @@ const app: Application = express();
 
 let corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:3003"],
+  // origin: true,
   credentials: true,
 };
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -22,7 +25,6 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/auth", adminUserRoutes);
-app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");

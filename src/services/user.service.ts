@@ -1,16 +1,11 @@
 import { UserRepository } from "../repositories/user.repository";
-import {
-  CreateAdminSchema,
-  LoginUserDto,
-  RegisterUserDto,
-  UpdateUserDto,
-} from "../dtos/user.dto";
+import { LoginUserDto, RegisterUserDto, UpdateUserDto } from "../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import fs from "fs";
 import path from "path";
 import { HttpError } from "../errors/http-error";
 import jwt from "jsonwebtoken";
-import { JWT_SECERT } from "../configs";
+import { JWT_SECRET } from "../configs";
 
 let userRepository = new UserRepository();
 
@@ -119,9 +114,17 @@ export class UserService {
       email: user.email,
       role: user.role,
     };
-    const token = jwt.sign(payload, JWT_SECERT, {
+    const token = jwt.sign(payload, JWT_SECRET, {
       expiresIn: "30d",
     });
     return { token, user };
+  }
+  async getUserById(userId: string) {
+    const user = await userRepository.getUserById(userId);
+    if (!user) {
+      throw new HttpError(404, "User not found");
+    }
+
+    return user;
   }
 }

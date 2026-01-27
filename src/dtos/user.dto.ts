@@ -2,7 +2,7 @@ import z from "zod";
 import { UserSchema } from "../types/user.type";
 
 export const RegisterUserDto = UserSchema.pick({
-  fullname: true,
+  fullName: true,
   email: true,
   phoneNumber: true,
   password: true,
@@ -24,7 +24,7 @@ export const LoginUserDto = z.object({
 export type LoginUserDto = z.infer<typeof LoginUserDto>;
 
 // export const UpdateUserDto = UserSchema.pick({
-//   fullname: true,
+//   fullName: true,
 //   email: true,
 //   profileImage: true,
 // }).partial();

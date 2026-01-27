@@ -2,7 +2,7 @@ import z from "zod";
 import { UserSchema } from "../types/user.type";
 
 export const CreateOrganizationDto = UserSchema.pick({
-  fullname: true,
+  fullName: true,
   email: true,
   phoneNumber: true,
   password: true,

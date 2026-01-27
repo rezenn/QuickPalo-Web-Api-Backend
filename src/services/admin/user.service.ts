@@ -72,7 +72,7 @@ export class AdminUserService {
     const hasedPassword = await bcryptjs.hash(data.password, 10);
 
     const organization = await userRepository.createUser({
-      fullname: data.fullname,
+      fullName: data.fullName,
       email: data.email,
       phoneNumber: data.phoneNumber,
       role: "organization",
