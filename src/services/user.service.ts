@@ -68,7 +68,6 @@ export class UserService {
           fs.unlinkSync(oldImagePath);
         }
       }
-
       // store only filename
       data.profilePicture = file.filename;
     }

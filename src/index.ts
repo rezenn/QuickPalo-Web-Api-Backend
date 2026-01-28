@@ -17,7 +17,10 @@ let corsOptions = {
   // origin: true,
   credentials: true,
 };
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use(
+  "/uploads/profile",
+  express.static(path.join(__dirname, "../uploads/profile")),
+);
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());

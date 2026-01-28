@@ -14,7 +14,7 @@ router.delete("/:id", authController.deleteUser);
 router.put(
   "/update-user",
   AuthorizedMiddleware,
-  uploads.single("profileImage"),
+  uploads.single("profilePicture"),
   authController.updateUser,
 );
 

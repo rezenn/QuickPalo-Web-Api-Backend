@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { RegisterUserDto, UpdateUserDto, LoginUserDto } from "../dtos/user.dto";
-import z, { success } from "zod";
+import z from "zod";
+import { HttpError } from "../errors/http-error";
 
 let userService = new UserService();
 export class AuthController {
@@ -76,39 +77,52 @@ export class AuthController {
 
   async updateUser(req: Request, res: Response) {
     try {
-      const userId = req.user?._id; // from middlware
+      const userId = req.user?._id;
       if (!userId) {
         return res
           .status(400)
           .json({ success: false, message: "User ID not provided" });
       }
+
       const parsedData = UpdateUserDto.safeParse(req.body);
       if (!parsedData.success) {
         return res
           .status(400)
           .json({ success: false, message: z.prettifyError(parsedData.error) });
       }
-      // if (req.file) {
-      //   // if new image uploaded through multer
-      //   parsedData.data.imageUrl = `/uploads/profile/${req.file.filename}`;
-      // }
+
       const updatedUser = await userService.updateUser(
         userId,
         parsedData.data,
         req.file,
       );
-      const userObj = updatedUser?.toObject();
-      userObj.imageUrl = userObj.image
-        ? `${req.protocol}://${req.get("host")}/uploads/profile/${userObj.image}`
-        : null;
-      delete userObj.image;
+
+      if (!updatedUser) {
+        throw new HttpError(500, "Failed to update user");
+      }
+
+      const userObj = updatedUser.toObject();
+      delete userObj.password;
+
+      if (userObj.profilePicture) {
+        userObj.imageUrl = `${req.protocol}://${req.get("host")}/uploads/profile/${userObj.profilePicture}`;
+      }
+
+      console.log("DEBUG - User update response:", {
+        id: userObj._id,
+        profilePicture: userObj.profilePicture,
+        hasProfilePicture: !!userObj.profilePicture,
+        imageUrl: userObj.imageUrl,
+        fields: Object.keys(userObj),
+      });
 
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
-        data: updatedUser,
+        data: userObj, 
       });
     } catch (error: Error | any) {
+      console.error("DEBUG - Update error:", error);
       return res.status(error.statusCode || 500).json({
         success: false,
         message: error.message || "Internal Server Error",
@@ -144,6 +158,12 @@ export class AuthController {
     try {
       const userId = req.user?._id;
       const user = await userService.getUserById(userId);
+      const userObj = user?.toObject();
+      if (userObj.profilePicture) {
+        userObj.imageUrl = `${req.protocol}://${req.get("host")}/uploads/profile/${userObj.profilePicture}`;
+      } else {
+        userObj.imageUrl = null;
+      }
       return res.status(200).json({
         success: true,
         message: "User featched successfully",
