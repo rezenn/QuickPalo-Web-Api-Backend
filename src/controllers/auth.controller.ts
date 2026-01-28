@@ -108,21 +108,12 @@ export class AuthController {
         userObj.imageUrl = `${req.protocol}://${req.get("host")}/uploads/profile/${userObj.profilePicture}`;
       }
 
-      console.log("DEBUG - User update response:", {
-        id: userObj._id,
-        profilePicture: userObj.profilePicture,
-        hasProfilePicture: !!userObj.profilePicture,
-        imageUrl: userObj.imageUrl,
-        fields: Object.keys(userObj),
-      });
-
       return res.status(200).json({
         success: true,
         message: "User updated successfully",
-        data: userObj, 
+        data: userObj,
       });
     } catch (error: Error | any) {
-      console.error("DEBUG - Update error:", error);
       return res.status(error.statusCode || 500).json({
         success: false,
         message: error.message || "Internal Server Error",
