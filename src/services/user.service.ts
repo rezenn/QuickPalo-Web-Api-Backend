@@ -54,7 +54,15 @@ export class UserService {
   ) {
     const user = await userRepository.getUserById(userId);
     if (!user) throw new HttpError(404, "User not found");
-
+    if (data.role) {
+      delete data.role;
+    }
+    if (data.email) {
+      delete data.email;
+    }
+    if (data.password) {
+      delete data.password;
+    }
     if (file) {
       // delete old image if exists
       if (user.profilePicture) {
