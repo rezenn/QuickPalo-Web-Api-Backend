@@ -93,7 +93,6 @@ export class AuthController {
       });
     }
   }
-
   async updateUser(req: Request, res: Response) {
     try {
       const userId = req.user?._id;
@@ -139,7 +138,6 @@ export class AuthController {
       });
     }
   }
-
   async loginUser(req: Request, res: Response) {
     try {
       const parsedData = LoginUserDto.safeParse(req.body);
@@ -163,7 +161,6 @@ export class AuthController {
       });
     }
   }
-
   async getUserById(req: Request, res: Response) {
     try {
       const userId = req.user?._id;
