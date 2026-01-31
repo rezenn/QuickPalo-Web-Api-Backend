@@ -1,7 +1,7 @@
 // import z from "zod";
 // import { UserSchema } from "../types/user.type";
 
-// export const CreateOrganizationDto = UserSchema.pick({
+// export const CreateNewUserDto = UserSchema.pick({
 //   fullName: true,
 //   email: true,
 //   phoneNumber: true,
@@ -12,4 +12,11 @@
 //   path: ["confirmPassword"],
 // });
 
-// export type CreateOrganizationDto = z.infer<typeof CreateOrganizationDto>;
+// export type CreateNewUserDto = z.infer<typeof CreateNewUserDto>;
+
+// export const UpdateUserDto = UserSchema.pick({
+//   fullName: true,
+//   phoneNumber: true,
+//   profilePicture: true,
+// }).partial();
+// export type UpdateUserDto = z.infer<typeof UpdateUserDto>;

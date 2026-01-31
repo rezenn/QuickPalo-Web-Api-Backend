@@ -10,6 +10,7 @@ router.post("/register", authController.createUser);
 router.post("/login", authController.loginUser);
 router.get("/:id", authController.getOneUser);
 router.get("/", authController.getAllUsers);
+router.get("/", authController.getAllOrganizations);
 router.delete("/:id", authController.deleteUser);
 router.put(
   "/update-user",

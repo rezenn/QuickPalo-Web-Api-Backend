@@ -59,6 +59,21 @@ export class AuthController {
       });
     }
   }
+  async getAllOrganizations(req: Request, res: Response) {
+    try {
+      const organizations = await userService.getAllOrganizations();
+      return res.status(200).json({
+        success: true,
+        data: organizations,
+        message: "Organizations fetched successfully",
+      });
+    } catch (error: Error | any) {
+      return res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message || "Internal Servicee Error",
+      });
+    }
+  }
   async deleteUser(req: Request, res: Response) {
     try {
       const userId = req.params.id;

@@ -1,35 +1,73 @@
-import { Router } from "express";
-import { AdminUserController } from "../../controllers/admin/auth.controller";
-import {
-  AdminMiddleware,
-  AuthorizedMiddleware,
-} from "../../middlewares/authorized.middleware";
-import { Request, Response } from "express";
+// import { Router } from "express";
+// import { AdminUserController } from "../../controllers/admin/auth.controller";
+// import {
+//   AdminMiddleware,
+//   AuthorizedMiddleware,
+// } from "../../middlewares/authorized.middleware";
+// import { Request, Response } from "express";
+// import { uploads } from "../../middlewares/upload.middleware";
 
-let adminUserController = new AdminUserController();
+// let adminUserController = new AdminUserController();
 
-const router = Router();
+// const router = Router();
 
-router.get(
-  "/dashboard",
-  AuthorizedMiddleware,
-  AdminMiddleware,
-  (req: Request, res: Response) => {
-    res.status(200).json({ success: true, message: "Welcome to admin" });
-  },
-);
-router.post(
-  "/register-organization",
-  AuthorizedMiddleware,
-  AdminMiddleware,
-  adminUserController.createOrganization,
-);
+// // router.use(AuthorizedMiddleware, AdminMiddleware);
 
-router.post("/", adminUserController.createUser);
-router.get("/:id", adminUserController.getOneUser);
-router.get("/", adminUserController.getAllUsers);
-router.put("/:id", adminUserController.updateUser);
-router.delete("/:id", adminUserController.deleteUser);
+// router.get(
+//   "/dashboard",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   (req: Request, res: Response) => {
+//     res.status(200).json({ success: true, message: "Welcome to admin" });
+//   },
+// );
 
-//
-export default router;
+// router.post("/", adminUserController.createUser);
+// router.post(
+//   "/register-organization",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   uploads.single("profilePicture"),
+//   adminUserController.createOrganization,
+// );
+// router.post(
+//   "/create-user",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   uploads.single("profilePicture"),
+//   adminUserController.createNewUser,
+// );
+// router.get(
+//   "/users",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   adminUserController.getAllUsers,
+// );
+// router.get(
+//   "/organizations",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   adminUserController.getAllOrganizations,
+// );
+// router.get(
+//   "/:id",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   adminUserController.getOneUser,
+// );
+// router.delete(
+//   "/:id",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   adminUserController.deleteUser,
+// );
+
+// router.put(
+//   "/:id",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   uploads.single("profilePicture"),
+//   adminUserController.updateUser,
+// );
+
+// export default router;

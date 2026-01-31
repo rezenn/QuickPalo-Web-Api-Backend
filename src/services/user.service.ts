@@ -93,7 +93,15 @@ export class UserService {
 
     return users;
   }
+  async getAllOrganizations() {
+    const organizations = await userRepository.getAllOrganizations();
 
+    if (!organizations || organizations.length === 0) {
+      return [];
+    }
+
+    return organizations;
+  }
   async loginUser(loginData: LoginUserDto) {
     const user = await userRepository.getUserByEmail(loginData.email);
     if (!user) {
