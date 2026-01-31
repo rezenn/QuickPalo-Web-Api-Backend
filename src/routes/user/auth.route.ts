@@ -1,7 +1,7 @@
-import { AuthController } from "../controllers/auth.controller";
-import { AuthorizedMiddleware } from "../middlewares/authorized.middleware";
+import { AuthController } from "../../controllers/user/auth.controller";
+import { AuthorizedMiddleware } from "../../middlewares/authorized.middleware";
 import { Router } from "express";
-import { uploads } from "../middlewares/upload.middleware";
+import { uploads } from "../../middlewares/upload.middleware";
 let authController = new AuthController();
 
 const router = Router();

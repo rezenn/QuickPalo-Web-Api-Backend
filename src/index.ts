@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import dotenv from "dotenv";
 import { PORT } from "./configs";
 import { connectDb } from "./database/mongodb";
-import authRoutes from "./routes/auth.route";
+import authRoutes from "./routes/user/auth.route";
 import adminUserRoutes from "./routes/admin/auth.route";
 import cors from "cors";
 import path from "path";

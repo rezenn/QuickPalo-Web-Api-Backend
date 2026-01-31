@@ -1,11 +1,15 @@
-import { UserRepository } from "../repositories/user.repository";
-import { LoginUserDto, RegisterUserDto, UpdateUserDto } from "../dtos/user.dto";
+import { UserRepository } from "../../repositories/user.repository";
+import {
+  LoginUserDto,
+  RegisterUserDto,
+  UpdateUserDto,
+} from "../../dtos/user.dto";
 import bcryptjs from "bcryptjs";
 import fs from "fs";
 import path from "path";
-import { HttpError } from "../errors/http-error";
+import { HttpError } from "../../errors/http-error";
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../configs";
+import { JWT_SECRET } from "../../configs";
 
 let userRepository = new UserRepository();
 

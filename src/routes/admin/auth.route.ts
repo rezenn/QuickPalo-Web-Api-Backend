@@ -37,6 +37,13 @@ router.post(
   uploads.single("profilePicture"),
   adminUserController.createNewUser,
 );
+router.put(
+  "/:id",
+  AuthorizedMiddleware,
+  AdminMiddleware,
+  uploads.single("profilePicture"),
+  adminUserController.updateUser,
+);
 router.get(
   "/users",
   AuthorizedMiddleware,
@@ -60,14 +67,6 @@ router.delete(
   AuthorizedMiddleware,
   AdminMiddleware,
   adminUserController.deleteUser,
-);
-
-router.put(
-  "/:id",
-  AuthorizedMiddleware,
-  AdminMiddleware,
-  uploads.single("profilePicture"),
-  adminUserController.updateUser,
 );
 
 export default router;

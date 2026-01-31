@@ -1,8 +1,12 @@
 import { Request, Response } from "express";
-import { UserService } from "../services/user.service";
-import { RegisterUserDto, UpdateUserDto, LoginUserDto } from "../dtos/user.dto";
+import { UserService } from "../../services/user/user.service";
+import {
+  RegisterUserDto,
+  UpdateUserDto,
+  LoginUserDto,
+} from "../../dtos/user.dto";
 import z from "zod";
-import { HttpError } from "../errors/http-error";
+import { HttpError } from "../../errors/http-error";
 
 let userService = new UserService();
 export class AuthController {
