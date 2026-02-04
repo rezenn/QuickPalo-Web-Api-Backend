@@ -19,4 +19,6 @@ router.put(
   authController.updateUser,
 );
 
+router.post("/request-password-reset", authController.requestPasswordChange);
+router.post("/reset-password/:token", authController.resetPassword);
 export default router;
