@@ -1,10 +1,9 @@
 import express, { Application, Request, Response } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
-import { PORT } from "./configs";
-import { connectDb } from "./database/mongodb";
 import authRoutes from "./routes/user/auth.route";
 import adminUserRoutes from "./routes/admin/auth.route";
+import organizationDetailsRoutes from "./routes/organization.route";
 import cors from "cors";
 import path from "path";
 // import cookieParser from "cookie-parser";
@@ -27,6 +26,7 @@ app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/auth", adminUserRoutes);
+app.use("/api/organizations", organizationDetailsRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");

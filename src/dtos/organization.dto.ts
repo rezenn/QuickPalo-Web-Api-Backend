@@ -1,5 +1,7 @@
+
 import z from "zod";
 import { UserSchema } from "../types/user.type";
+import { OrganizationSchema } from "../types/organization.type";
 
 export const CreateOrganizationDto = UserSchema.pick({
   fullName: true,
@@ -13,3 +15,30 @@ export const CreateOrganizationDto = UserSchema.pick({
 });
 
 export type CreateOrganizationDto = z.infer<typeof CreateOrganizationDto>;
+
+// ✅ FIX: match your OrganizationSchema fields
+export const CreateOrganizationDetailsDto = OrganizationSchema.pick({
+  organizationName: true,
+  organizationType: true,
+  description: true,
+  location: true,
+  city: true,
+  state: true,
+  contactEmail: true,
+  contactPhone: true,
+  workingHours: true,
+  departments: true,
+  appointmentDuration: true,
+  advanceBookingDays: true,
+  timeSlots: true,
+});
+
+export type CreateOrganizationDetailsDto = z.infer<
+  typeof CreateOrganizationDetailsDto
+>;
+
+// Simple partial for update
+export const UpdateOrganizationDetailsDto = OrganizationSchema.partial();
+export type UpdateOrganizationDetailsDto = z.infer<
+  typeof UpdateOrganizationDetailsDto
+>;

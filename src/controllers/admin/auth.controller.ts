@@ -2,9 +2,9 @@ import z, { success } from "zod";
 import { Request, Response } from "express";
 import { RegisterUserDto, UpdateUserDto } from "../../dtos/user.dto";
 import { AdminUserService } from "../../services/admin/user.service";
-import { CreateOrganizationDto } from "../../dtos/organization.dto";
 import { CreateNewUserDto } from "../../dtos/admin.dto";
 import { HttpError } from "../../errors/http-error";
+import { CreateOrganizationDto } from "../../dtos/organization.dto";
 
 let adminUserService = new AdminUserService();
 
