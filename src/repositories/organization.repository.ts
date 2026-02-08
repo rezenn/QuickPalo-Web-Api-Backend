@@ -1,4 +1,3 @@
-// repositories/organization.repository.ts
 import { OrganizationModel, IOrganization } from "../models/organization.model";
 
 export interface IOrganizationRepository {

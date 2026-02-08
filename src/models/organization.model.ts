@@ -37,7 +37,7 @@ const organizationMongoSchema: Schema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      unique: true, 
+      unique: true,
     },
 
     organizationName: { type: String, required: true },
@@ -52,20 +52,19 @@ const organizationMongoSchema: Schema = new Schema(
         "school",
         "college",
         "university",
+        "others",
       ],
       required: true,
     },
     description: { type: String },
 
-    location: { type: String, required: true },
-    city: { type: String },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
     state: { type: String },
 
-    // Contact
     contactEmail: { type: String },
     contactPhone: { type: String },
 
-    // Working Schedule
     workingHours: {
       type: [WorkingHourSchema],
       default: [
@@ -114,14 +113,11 @@ const organizationMongoSchema: Schema = new Schema(
       ],
     },
 
-    // Departments
     departments: { type: [DepartmentSchema], default: [] },
 
-    // Appointment Settings
-    appointmentDuration: { type: Number, default: 30 }, // in minutes
+    appointmentDuration: { type: Number, default: 30 },
     advanceBookingDays: { type: Number, default: 7 },
 
-    // Time Slots
     timeSlots: {
       type: [TimeSlotSchema],
       default: [
@@ -142,16 +138,11 @@ const organizationMongoSchema: Schema = new Schema(
       ],
     },
 
-    // Status fields
     isActive: { type: Boolean, default: true },
     isVerified: { type: Boolean, default: false },
-
-    // Additional images
-    bannerImage: { type: String }, // Store filename only
-    gallery: [{ type: String }], // Array of image filenames
   },
   {
-    timestamps: true, // auto-generate createdAt and updatedAt
+    timestamps: true,
   },
 );
 
@@ -159,20 +150,14 @@ const organizationMongoSchema: Schema = new Schema(
 organizationMongoSchema.index({ userId: 1 });
 organizationMongoSchema.index({ organizationType: 1 });
 organizationMongoSchema.index({ city: 1, state: 1 });
-organizationMongoSchema.index({ isVerified: 1, isActive: 1 });
 organizationMongoSchema.index({
   organizationName: "text",
   description: "text",
 });
 
-// Interface extending both Organization type and Mongoose Document
 export interface IOrganization extends Omit<Organization, "userId">, Document {
-  userId: mongoose.Types.ObjectId; // reference to User
-  _id: mongoose.Types.ObjectId; // MongoDB _id
-  isActive: boolean;
-  isVerified: boolean;
-  bannerImage?: string;
-  gallery?: string[];
+  userId: mongoose.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }

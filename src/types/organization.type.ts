@@ -9,6 +9,7 @@ export const OrganizationTypeSchema = z.enum([
   "school",
   "college",
   "university",
+  "others",
 ]);
 
 export const DayOfWeekSchema = z.enum([
@@ -40,21 +41,17 @@ export const TimeSlotSchema = z.object({
 });
 
 export const OrganizationSchema = z.object({
-  // Basic Info
   organizationName: z.string().min(3, "Organization name is required"),
   organizationType: OrganizationTypeSchema,
   description: z.string().optional(),
 
-  // Location
-  location: z.string().min(1, "Location is required"),
-  city: z.string().optional(),
+  street: z.string().min(1, "Street is required"),
+  city: z.string().min(1, "City is required"),
   state: z.string().optional(),
 
-  // Contact
   contactEmail: z.string().email().optional(),
   contactPhone: z.string().optional(),
 
-  // Working Schedule (One schedule per day)
   workingHours: z
     .array(WorkingHourSchema)
     .length(7)
@@ -103,14 +100,12 @@ export const OrganizationSchema = z.object({
       },
     ]),
 
-  // Departments
   departments: z.array(DepartmentSchema).default([]),
 
-  // Appointment Settings
-  appointmentDuration: z.number().min(5).default(30), // in minutes
+  appointmentDuration: z.number().min(5).default(30),
   advanceBookingDays: z.number().min(1).default(7),
 
-  // Time Slots (Pre-defined slots for appointments)
+  // Time Slots  => Pre-defined slots for appointments
   timeSlots: z.array(TimeSlotSchema).default([
     { startTime: "09:00", endTime: "09:30", isAvailable: true },
     { startTime: "09:30", endTime: "10:00", isAvailable: true },

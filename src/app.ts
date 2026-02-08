@@ -6,7 +6,6 @@ import adminUserRoutes from "./routes/admin/auth.route";
 import organizationDetailsRoutes from "./routes/organization.route";
 import cors from "cors";
 import path from "path";
-// import cookieParser from "cookie-parser";
 
 dotenv.config();
 const app: Application = express();
@@ -22,7 +21,6 @@ app.use(
 
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
-// app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin/auth", adminUserRoutes);

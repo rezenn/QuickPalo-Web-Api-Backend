@@ -1,4 +1,3 @@
-// services/organization-details.service.ts
 import { OrganizationModel } from "../models/organization.model";
 import { HttpError } from "../errors/http-error";
 import { CreateOrganizationDetailsDto } from "../dtos/organization.dto";

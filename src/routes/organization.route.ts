@@ -1,6 +1,5 @@
-// routes/organization-details.routes.ts
 import { Router } from "express";
-import { AuthorizedMiddleware } from "../middlewares/authorized.middleware"; // adjust path
+import { AuthorizedMiddleware } from "../middlewares/authorized.middleware"; 
 import { OrganizationDetailsController } from "../controllers/organization.controller";
 
 const router = Router();
