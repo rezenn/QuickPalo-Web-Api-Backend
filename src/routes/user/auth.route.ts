@@ -1,15 +1,18 @@
 import { AuthController } from "../../controllers/user/auth.controller";
 import { AuthorizedMiddleware } from "../../middlewares/authorized.middleware";
+
 import { Router } from "express";
 import { uploads } from "../../middlewares/upload.middleware";
 let authController = new AuthController();
 
 const router = Router();
+
+router.get("/organizations", authController.getAllOrganizations);
+
 router.get("/get-user", AuthorizedMiddleware, authController.getUserById);
 router.post("/register", authController.createUser);
 router.post("/login", authController.loginUser);
 router.get("/users", authController.getAllUsers);
-router.get("/organizations", authController.getAllOrganizations);
 router.get("/:id", authController.getOneUser);
 router.delete("/:id", authController.deleteUser);
 router.put(

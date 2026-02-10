@@ -1,19 +1,17 @@
-import { OrganizationModel } from "../models/organization.model";
-import { HttpError } from "../errors/http-error";
-import { CreateOrganizationDetailsDto } from "../dtos/organization.dto";
+import { OrganizationModel } from "../../models/organization.model";
+import { HttpError } from "../../errors/http-error";
+import { CreateOrganizationDetailsDto } from "../../dtos/organization.dto";
 
 export class OrganizationDetailsService {
   async createOrganizationDetails(
     userId: string,
     data: CreateOrganizationDetailsDto,
   ) {
-    // Check if organization already has details
     const existing = await OrganizationModel.findOne({ userId });
     if (existing) {
       throw new HttpError(409, "Organization details already exist");
     }
 
-    // Create organization details
     const organization = new OrganizationModel({
       userId,
       ...data,

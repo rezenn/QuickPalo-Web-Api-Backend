@@ -93,15 +93,6 @@ export class AdminUserService {
     }
     return updateUser;
   }
-  // async getAllUsers() {
-  //   const users = await userRepository.getNormalUsers();
-
-  //   if (!users || users.length === 0) {
-  //     return [];
-  //   }
-
-  //   return users;
-  // }
 
   async getAllUsers({
     page,

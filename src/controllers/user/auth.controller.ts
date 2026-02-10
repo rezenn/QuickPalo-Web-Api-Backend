@@ -63,21 +63,55 @@ export class AuthController {
       });
     }
   }
+
   async getAllOrganizations(req: Request, res: Response) {
     try {
-      const organizations = await userService.getAllOrganizations();
+      const {
+        city,
+        organizationType,
+        page = 1,
+        limit = 10,
+        isActive = "true",
+        isVerified = "false",
+      } = req.query;
+      const userRole = req.user?.role;
+
+      let showActiveOnly = true;
+      let showVerifiedOnly = false;
+
+      if (userRole === "admin") {
+        showActiveOnly = isActive === "true";
+        showVerifiedOnly = isVerified === "true";
+      } else if (userRole === "organization") {
+        showActiveOnly = true;
+        showVerifiedOnly = false;
+      } else {
+        showActiveOnly = true;
+        showVerifiedOnly = false;
+      }
+      const organizations = await userService.getAllOrganizations({
+        city: city as string,
+        organizationType: organizationType as string,
+        page: parseInt(page as string),
+        limit: parseInt(limit as string),
+        isActive: isActive === "true",
+        isVerified: isVerified === "true",
+      });
+
       return res.status(200).json({
         success: true,
-        data: organizations,
+        data: organizations.data,
+        pagination: organizations.pagination,
         message: "Organizations fetched successfully",
       });
-    } catch (error: Error | any) {
+    } catch (error: any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "Internal server error",
       });
     }
   }
+
   async deleteUser(req: Request, res: Response) {
     try {
       const userId = req.params.id;

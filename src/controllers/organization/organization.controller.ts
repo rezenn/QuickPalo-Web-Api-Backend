@@ -3,12 +3,13 @@ import z from "zod";
 import {
   CreateOrganizationDetailsDto,
   UpdateOrganizationDetailsDto,
-} from "../dtos/organization.dto";
-import { OrganizationDetailsService } from "../services/organization.service";
+} from "../../dtos/organization.dto";
+import { OrganizationDetailsService } from "../../services/organization/organization.service";
 
 const organizationDetailsService = new OrganizationDetailsService();
 
 export class OrganizationDetailsController {
+  organizationDetailsController: any;
   async createDetails(req: Request, res: Response) {
     try {
       const userId = req.user?._id;

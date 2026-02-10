@@ -11,7 +11,6 @@ let adminUserController = new AdminUserController();
 
 const router = Router();
 
-// router.use(AuthorizedMiddleware, AdminMiddleware);
 
 router.get(
   "/dashboard",

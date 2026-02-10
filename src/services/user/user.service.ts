@@ -11,6 +11,7 @@ import { HttpError } from "../../errors/http-error";
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../../configs";
 import { sendEmail } from "../../configs/email";
+import { OrganizationModel } from "../../models/organization.model";
 
 let userRepository = new UserRepository();
 
@@ -106,15 +107,119 @@ export class UserService {
 
     return users;
   }
-  async getAllOrganizations() {
-    const organizations = await userRepository.getAllOrganizations();
 
-    if (!organizations || organizations.length === 0) {
-      return [];
-    }
+  async getAllOrganizations(filters: {
+    city?: string;
+    organizationType?: string;
+    page: number;
+    limit: number;
+    isActive?: boolean;
+    isVerified?: boolean;
+  }) {
+    const {
+      city,
+      organizationType,
+      page,
+      limit,
+      isActive = true,
+      isVerified,
+    } = filters;
 
-    return organizations;
+    const query: any = { isActive };
+
+    if (city) query.city = { $regex: new RegExp(city, "i") };
+    if (organizationType) query.organizationType = organizationType;
+    if (isVerified !== undefined) query.isVerified = isVerified;
+
+    const organizations = await OrganizationModel.aggregate([
+      { $match: query },
+
+      {
+        $lookup: {
+          from: "organizations",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+          pipeline: [
+            {
+              $project: {
+                fullName: 1,
+                email: 1,
+                phoneNumber: 1,
+                profilePicture: 1,
+                role: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
+
+      // Project final structure
+      {
+        $project: {
+          _id: 1,
+          userId: 1,
+          organizationName: 1,
+          organizationType: 1,
+          description: 1,
+          street: 1,
+          city: 1,
+          state: 1,
+          contactEmail: 1,
+          contactPhone: 1,
+          workingHours: 1,
+          departments: 1,
+          appointmentDuration: 1,
+          advanceBookingDays: 1,
+          timeSlots: 1,
+          isActive: 1,
+          isVerified: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          user: {
+            _id: "$user._id",
+            fullName: "$user.fullName",
+            email: "$user.email",
+            phoneNumber: "$user.phoneNumber",
+            profilePicture: "$user.profilePicture",
+          },
+        },
+      },
+
+      { $sort: { createdAt: -1 } },
+
+      // Pagination
+      {
+        $facet: {
+          data: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+          total: [{ $count: "count" }],
+          totalPages: [
+            { $count: "count" },
+            {
+              $addFields: {
+                totalPages: { $ceil: { $divide: ["$count", limit] } },
+              },
+            },
+            { $project: { totalPages: 1 } },
+          ],
+        },
+      },
+    ]);
+
+    return {
+      data: organizations[0]?.data || [],
+      pagination: {
+        page,
+        limit,
+        total: organizations[0]?.total[0]?.count || 0,
+        totalPages: organizations[0]?.totalPages[0]?.totalPages || 0,
+        hasNextPage: page < (organizations[0]?.totalPages[0]?.totalPages || 0),
+        hasPrevPage: page > 1,
+      },
+    };
   }
+
   async loginUser(loginData: LoginUserDto) {
     const user = await userRepository.getUserByEmail(loginData.email);
     if (!user) {

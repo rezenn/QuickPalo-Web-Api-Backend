@@ -62,22 +62,6 @@ export class AdminUserController {
     }
   }
 
-  // async getAllUsers(req: Request, res: Response) {
-  //   try {
-  //     const users = await adminUserService.getAllUsers();
-  //     return res.status(200).json({
-  //       success: true,
-  //       data: users,
-  //       message: "Users fetched successfully",
-  //     });
-  //   } catch (error: Error | any) {
-  //     return res.status(error.statusCode || 500).json({
-  //       success: false,
-  //       message: error.message || "Internal Servicee Error",
-  //     });
-  //   }
-  // }
-
   async getAllUsers(req: Request, res: Response) {
     try {
       const { page, size, search, role }: QueryParams = req.query;
