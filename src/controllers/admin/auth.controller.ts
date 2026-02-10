@@ -8,6 +8,12 @@ import { CreateOrganizationDto } from "../../dtos/organization.dto";
 
 let adminUserService = new AdminUserService();
 
+interface QueryParams {
+  page?: string;
+  size?: string;
+  search?: string;
+  role?: string;
+}
 export class AdminUserController {
   async createUser(req: Request, res: Response) {
     try {
@@ -56,21 +62,46 @@ export class AdminUserController {
     }
   }
 
+  // async getAllUsers(req: Request, res: Response) {
+  //   try {
+  //     const users = await adminUserService.getAllUsers();
+  //     return res.status(200).json({
+  //       success: true,
+  //       data: users,
+  //       message: "Users fetched successfully",
+  //     });
+  //   } catch (error: Error | any) {
+  //     return res.status(error.statusCode || 500).json({
+  //       success: false,
+  //       message: error.message || "Internal Servicee Error",
+  //     });
+  //   }
+  // }
+
   async getAllUsers(req: Request, res: Response) {
     try {
-      const users = await adminUserService.getAllUsers();
+      const { page, size, search, role }: QueryParams = req.query;
+
+      const result = await adminUserService.getAllUsers({
+        page: page || "1",
+        size: size || "10",
+        search: search || "",
+        role: role,
+      });
+
       return res.status(200).json({
         success: true,
-        data: users,
+        data: result,
         message: "Users fetched successfully",
       });
-    } catch (error: Error | any) {
+    } catch (error: any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message,
       });
     }
   }
+
   async getAllOrganizations(req: Request, res: Response) {
     try {
       const organizations = await adminUserService.getAllOrganizations();

@@ -15,3 +15,5 @@ export const JWT_SECRET: string =
 
 export const FRONTEND_URL: string =
   process.env.FRONTEND_URL || "http://localhost:3000";
+export const BASE_URL: string =
+  process.env.BASE_URL || "http://localhost:5050";

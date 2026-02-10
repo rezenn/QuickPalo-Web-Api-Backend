@@ -1,3 +1,4 @@
+import { QueryFilter } from "mongoose";
 import { UserModel, IUser } from "../models/user.model";
 
 export interface IUserRepository {
@@ -7,6 +8,17 @@ export interface IUserRepository {
   getAllUsers(): Promise<IUser[]>;
   updateUser(userId: string, updateData: Partial<IUser>): Promise<IUser | null>;
   deleteUser(userId: string): Promise<boolean | null>;
+  findAll({
+    page,
+    size,
+    search,
+    role,
+  }: {
+    page: number;
+    size: number;
+    search?: string;
+    role?: string;
+  }): Promise<{ users: IUser[]; total: number }>;
 }
 export class UserRepository implements IUserRepository {
   async createUser(userData: Partial<IUser>): Promise<IUser> {
@@ -47,5 +59,38 @@ export class UserRepository implements IUserRepository {
   async getUserById(userId: string): Promise<IUser | null> {
     const user = await UserModel.findById(userId);
     return user;
+  }
+  async findAll({
+    page,
+    size,
+    search,
+    role,
+  }: {
+    page: number;
+    size: number;
+    search?: string;
+    role?: string;
+  }): Promise<{ users: IUser[]; total: number }> {
+    let filter: QueryFilter<IUser> = {};
+    if (role) {
+      filter.role = role;
+    }
+    if (search) {
+      filter = {
+        $or: [
+          { fullName: { $regex: search, $options: "i" } },
+          { email: { $regex: search, $options: "i" } },
+          { phoneNumber: { $regex: search, $options: "i" } },
+        ],
+      };
+    }
+    const [users, total] = await Promise.all([
+      UserModel.find(filter)
+        .skip((page - 1) * size)
+        .limit(size)
+        .sort({ createdAt: -1 }),
+      UserModel.countDocuments(filter),
+    ]);
+    return { users, total };
   }
 }

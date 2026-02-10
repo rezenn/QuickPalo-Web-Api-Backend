@@ -93,14 +93,55 @@ export class AdminUserService {
     }
     return updateUser;
   }
-  async getAllUsers() {
-    const users = await userRepository.getNormalUsers();
+  // async getAllUsers() {
+  //   const users = await userRepository.getNormalUsers();
 
-    if (!users || users.length === 0) {
-      return [];
-    }
+  //   if (!users || users.length === 0) {
+  //     return [];
+  //   }
 
-    return users;
+  //   return users;
+  // }
+
+  async getAllUsers({
+    page,
+    size,
+    search,
+    role,
+  }: {
+    page: string;
+    size: string;
+    search?: string;
+    role?: string;
+  }) {
+    const currentPage = page ? parseInt(page) : 1;
+    const pageSize = size ? parseInt(size) : 10;
+    const currentSearch = search || "";
+
+    const { users, total } = await userRepository.findAll({
+      page: currentPage,
+      size: pageSize,
+      search: currentSearch,
+      role: role || "user",
+    });
+    const usersWithUrls = users.map((user) => {
+      const userObj = user.toObject();
+      delete userObj.password;
+
+      if (userObj.profilePicture) {
+        userObj.imageUrl = `${process.env.BASE_URL || "http://localhost:5050"}/uploads/profile/${userObj.profilePicture}`;
+      }
+      return userObj;
+    });
+    return {
+      users: usersWithUrls,
+      pagination: {
+        page: currentPage,
+        size: pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
   }
   async getAllOrganizations() {
     const organizations = await userRepository.getAllOrganizations();
