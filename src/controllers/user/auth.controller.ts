@@ -111,6 +111,25 @@ export class AuthController {
       });
     }
   }
+  async getOrganizationById(req: Request, res: Response) {
+    try {
+      const organizationId = req.params.id;
+
+      const organization =
+        await userService.getOrganizationById(organizationId);
+
+      return res.status(200).json({
+        success: true,
+        data: organization,
+        message: "Organization fetched successfully",
+      });
+    } catch (error: any) {
+      return res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message || "Internal server error",
+      });
+    }
+  }
 
   async deleteUser(req: Request, res: Response) {
     try {

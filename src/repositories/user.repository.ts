@@ -35,10 +35,6 @@ export class UserRepository implements IUserRepository {
     const users = await UserModel.find();
     return users;
   }
-  // async getAllOrganizations(): Promise<IUser[]> {
-  //   const users = await UserModel.find({ role: "organization" });
-  //   return users;
-  // }
 
   async getAllOrganizations(): Promise<any[]> {
     const organizations = await OrganizationModel.aggregate([
@@ -56,13 +52,6 @@ export class UserRepository implements IUserRepository {
           preserveNullAndEmptyArrays: true,
         },
       },
-
-      // {
-      // $match: {
-      //   role: "organization",
-      //   "organizationDetails.isActive": true,
-      // },
-      // },
 
       {
         $project: {
@@ -100,7 +89,7 @@ export class UserRepository implements IUserRepository {
 
     return organizations;
   }
-  
+
   async getNormalUsers(): Promise<IUser[]> {
     const users = await UserModel.find({ role: "user" });
     return users;

@@ -49,7 +49,7 @@ export const OrganizationSchema = z.object({
   city: z.string().min(1, "City is required"),
   state: z.string().optional(),
 
-  contactEmail: z.string().email().optional(),
+  contactEmail: z.string().email(),
   contactPhone: z.string().optional(),
 
   workingHours: z

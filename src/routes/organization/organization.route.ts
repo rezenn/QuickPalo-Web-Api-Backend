@@ -10,8 +10,17 @@ let authController = new AuthController();
 const controller = new OrganizationDetailsController();
 
 router.get("/", authController.getAllOrganizations);
+// router.get(
+//   "/:id",
+//   authController.getOneUser,
+// );
 
-// All routes require a JWT and role === "organization"
+router.get(
+  "/:id",
+  AuthorizedMiddleware,
+  authController.getOrganizationById.bind(authController),
+);
+
 router.post(
   "/details",
   AuthorizedMiddleware,

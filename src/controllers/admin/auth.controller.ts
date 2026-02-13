@@ -97,7 +97,7 @@ export class AdminUserController {
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "Internal Service Error",
       });
     }
   }
@@ -109,7 +109,7 @@ export class AdminUserController {
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "Internal Service Error",
       });
     }
   }
@@ -145,7 +145,7 @@ export class AdminUserController {
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "Internal Service Error",
       });
     }
   }
@@ -178,7 +178,7 @@ export class AdminUserController {
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "Internal Service Error",
       });
     }
   }
@@ -207,7 +207,7 @@ export class AdminUserController {
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
         success: false,
-        message: error.message || "Internal Servicee Error",
+        message: error.message || "Internal Service Error",
       });
     }
   }

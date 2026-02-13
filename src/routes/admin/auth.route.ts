@@ -55,12 +55,12 @@ router.get(
   AdminMiddleware,
   adminUserController.getAllOrganizations,
 );
-router.get(
-  "/:id",
-  AuthorizedMiddleware,
-  AdminMiddleware,
-  adminUserController.getOneUser,
-);
+// router.get(
+//   "/:id",
+//   AuthorizedMiddleware,
+//   AdminMiddleware,
+//   adminUserController.getOneUser,
+// );
 router.delete(
   "/:id",
   AuthorizedMiddleware,
