@@ -16,12 +16,6 @@ describe("Authentication Integration Tests", () => {
     password: "testpassword",
     confirmPassword: "testpassword",
   };
-  beforeAll(async () => {
-    await UserModel.deleteMany({ email: testUser.email });
-  });
-  afterAll(async () => {
-    await UserModel.deleteMany({ email: testUser.email });
-  });
 
   describe("POST /api/auth/register", () => {
     // nested describe block
@@ -30,7 +24,7 @@ describe("Authentication Integration Tests", () => {
       // test case description
       const response = await request(app)
         .post("/api/auth/register")
-        .send(testUser); 
+        .send(testUser);
       expect(response.status).toBe(201);
       expect(response.body).toHaveProperty("success", true);
       expect(response.body).toHaveProperty(

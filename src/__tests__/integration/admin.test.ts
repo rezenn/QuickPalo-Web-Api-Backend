@@ -5,25 +5,13 @@ import bcryptjs from "bcryptjs";
 import app from "../../app";
 import { UserModel } from "../../models/user.model";
 import { OrganizationModel } from "../../models/organization.model";
-import { connectDb } from "../../database/mongodb";
 import { JWT_SECRET } from "../../configs";
 
 describe("Admin API Tests", () => {
   let adminToken: string;
   let adminUser: any;
 
-  beforeAll(async () => {
-    await connectDb();
-  });
-
-  afterAll(async () => {
-    await mongoose.connection.close();
-  });
-
   beforeEach(async () => {
-    await UserModel.deleteMany({});
-    await OrganizationModel.deleteMany({});
-
     const hashedPassword = await bcryptjs.hash("Admin@123", 10);
     adminUser = await UserModel.create({
       fullName: "Admin User",
