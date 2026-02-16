@@ -10,10 +10,12 @@ let authController = new AuthController();
 const controller = new OrganizationDetailsController();
 
 router.get("/", authController.getAllOrganizations);
-// router.get(
-//   "/:id",
-//   authController.getOneUser,
-// );
+
+router.get(
+  "/details",
+  AuthorizedMiddleware,
+  controller.getMyDetails.bind(controller),
+);
 
 router.get(
   "/:id",
@@ -25,12 +27,6 @@ router.post(
   "/details",
   AuthorizedMiddleware,
   controller.createDetails.bind(controller),
-);
-
-router.get(
-  "/details",
-  AuthorizedMiddleware,
-  controller.getMyDetails.bind(controller),
 );
 
 router.put(
