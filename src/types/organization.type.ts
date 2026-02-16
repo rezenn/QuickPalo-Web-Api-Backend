@@ -102,10 +102,11 @@ export const OrganizationSchema = z.object({
 
   departments: z.array(DepartmentSchema).default([]),
 
+  fees: z.number().min(1),
   appointmentDuration: z.number().min(5).default(30),
   advanceBookingDays: z.number().min(1).default(7),
 
-  // Time Slots  => Pre-defined slots for appointments
+  // Time Slots  => Pre-defined slots
   timeSlots: z.array(TimeSlotSchema).default([
     { startTime: "09:00", endTime: "09:30", isAvailable: true },
     { startTime: "09:30", endTime: "10:00", isAvailable: true },

@@ -26,6 +26,7 @@ export const CreateOrganizationDetailsDto = OrganizationSchema.pick({
   contactPhone: true,
   workingHours: true,
   departments: true,
+  fees: true,
   appointmentDuration: true,
   advanceBookingDays: true,
   timeSlots: true,

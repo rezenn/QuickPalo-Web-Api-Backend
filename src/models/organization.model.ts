@@ -115,6 +115,7 @@ const organizationMongoSchema: Schema = new Schema(
 
     departments: { type: [DepartmentSchema], default: [] },
 
+    fees: { type: Number },
     appointmentDuration: { type: Number, default: 30 },
     advanceBookingDays: { type: Number, default: 7 },
 
@@ -146,7 +147,6 @@ const organizationMongoSchema: Schema = new Schema(
   },
 );
 
-// Create indexes for better query performance
 organizationMongoSchema.index({ userId: 1 });
 organizationMongoSchema.index({ organizationType: 1 });
 organizationMongoSchema.index({ city: 1, state: 1 });
