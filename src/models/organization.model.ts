@@ -115,7 +115,11 @@ const organizationMongoSchema: Schema = new Schema(
 
     departments: { type: [DepartmentSchema], default: [] },
 
-    fees: { type: Number },
+    fees: {
+      type: Number,
+      default: 1,
+      required: true,
+    },
     appointmentDuration: { type: Number, default: 30 },
     advanceBookingDays: { type: Number, default: 7 },
 

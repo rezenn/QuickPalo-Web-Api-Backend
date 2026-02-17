@@ -154,6 +154,7 @@ export class UserService {
           contactPhone: 1,
           workingHours: 1,
           departments: 1,
+          fees: 1,
           appointmentDuration: 1,
           advanceBookingDays: 1,
           timeSlots: 1,
@@ -220,7 +221,6 @@ export class UserService {
       },
       { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
 
-      // Project final structure
       {
         $project: {
           _id: 1,
@@ -235,6 +235,7 @@ export class UserService {
           contactPhone: 1,
           workingHours: 1,
           departments: 1,
+          fees: 1,
           appointmentDuration: 1,
           advanceBookingDays: 1,
           timeSlots: 1,

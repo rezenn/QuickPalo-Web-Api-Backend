@@ -36,7 +36,10 @@ export type CreateOrganizationDetailsDto = z.infer<
   typeof CreateOrganizationDetailsDto
 >;
 
-export const UpdateOrganizationDetailsDto = OrganizationSchema.partial();
+export const UpdateOrganizationDetailsDto = OrganizationSchema.partial().refine(
+  (data) => data.fees === undefined || data.fees >= 1,
+  { message: "Fees must be at least 1", path: ["fees"] },
+);
 export type UpdateOrganizationDetailsDto = z.infer<
   typeof UpdateOrganizationDetailsDto
 >;

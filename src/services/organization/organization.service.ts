@@ -41,7 +41,11 @@ export class OrganizationDetailsService {
       throw new HttpError(404, "Organization details not found");
     }
 
-    Object.assign(organization, data);
+    Object.keys(data).forEach((key) => {
+      if (data[key] !== undefined && data[key] !== null) {
+        (organization as any)[key] = data[key];
+      }
+    });
     await organization.save();
 
     return organization;

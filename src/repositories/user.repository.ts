@@ -37,58 +37,58 @@ export class UserRepository implements IUserRepository {
   }
 
   async getAllOrganizations(): Promise<any[]> {
-    const organizations = await OrganizationModel.aggregate([
-      {
-        $lookup: {
-          from: "users",
-          localField: "userId",
-          foreignField: "_id",
-          as: "user",
+  const organizations = await OrganizationModel.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "userId",
+        foreignField: "_id",
+        as: "user",
+      },
+    },
+    {
+      $unwind: {
+        path: "$user",
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    {
+      $project: {
+        _id: 1,
+        userId: 1,
+        organizationName: 1,
+        organizationType: 1,
+        description: 1,
+        street: 1,
+        city: 1,
+        state: 1,
+        contactEmail: 1,
+        contactPhone: 1,
+        workingHours: 1,
+        departments: 1,
+        fees: 1, 
+        appointmentDuration: 1,
+        advanceBookingDays: 1,
+        timeSlots: 1,
+        isActive: 1,
+        isVerified: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        user: {
+          _id: "$user._id",
+          fullName: "$user.fullName",
+          email: "$user.email",
+          phoneNumber: "$user.phoneNumber",
+          profilePicture: "$user.profilePicture",
+          role: "$user.role",
         },
       },
-      {
-        $unwind: {
-          path: "$user",
-          preserveNullAndEmptyArrays: true,
-        },
-      },
+    },
+    { $sort: { createdAt: -1 } },
+  ]);
 
-      {
-        $project: {
-          _id: 1,
-          userId: 1,
-          organizationName: 1,
-          organizationType: 1,
-          description: 1,
-          street: 1,
-          city: 1,
-          state: 1,
-          contactEmail: 1,
-          contactPhone: 1,
-          workingHours: 1,
-          departments: 1,
-          appointmentDuration: 1,
-          advanceBookingDays: 1,
-          timeSlots: 1,
-          isActive: 1,
-          isVerified: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          user: {
-            _id: "$user._id",
-            fullName: "$user.fullName",
-            email: "$user.email",
-            phoneNumber: "$user.phoneNumber",
-            profilePicture: "$user.profilePicture",
-            role: "$user.role",
-          },
-        },
-      },
-      { $sort: { createdAt: -1 } },
-    ]);
-
-    return organizations;
-  }
+  return organizations;
+}
 
   async getNormalUsers(): Promise<IUser[]> {
     const users = await UserModel.find({ role: "user" });

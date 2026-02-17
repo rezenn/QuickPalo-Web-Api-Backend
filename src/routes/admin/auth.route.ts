@@ -10,17 +10,6 @@ import { uploads } from "../../middlewares/upload.middleware";
 let adminUserController = new AdminUserController();
 
 const router = Router();
-
-
-router.get(
-  "/dashboard",
-  AuthorizedMiddleware,
-  AdminMiddleware,
-  (req: Request, res: Response) => {
-    res.status(200).json({ success: true, message: "Welcome to admin" });
-  },
-);
-
 router.post("/", adminUserController.createUser);
 router.post(
   "/register-organization",

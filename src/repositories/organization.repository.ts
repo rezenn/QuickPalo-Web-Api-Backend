@@ -31,16 +31,19 @@ export class OrganizationRepository implements IOrganizationRepository {
   }
 
   async getOrganizationByUserId(userId: string): Promise<IOrganization | null> {
-    const organization = await OrganizationModel.findOne({ userId }).populate(
-      "userId",
-      "fullName email phoneNumber profilePicture",
-    );
+    const organization = await OrganizationModel.findOne({ userId }).populate({
+      path: "userId",
+      select: "fullName email phoneNumber profilePicture",
+    });
     return organization;
   }
 
   async getAllOrganizations(): Promise<IOrganization[]> {
     const organizations = await OrganizationModel.find()
-      .populate("userId", "fullName email phoneNumber profilePicture")
+      .populate({
+        path: "userId",
+        select: "fullName email phoneNumber profilePicture",
+      })
       .sort({ createdAt: -1 });
     return organizations;
   }
@@ -53,7 +56,10 @@ export class OrganizationRepository implements IOrganizationRepository {
       orgId,
       updateData,
       { new: true },
-    ).populate("userId", "fullName email phoneNumber profilePicture");
+    ).populate({
+      path: "userId",
+      select: "fullName email phoneNumber profilePicture",
+    });
     return organization;
   }
 
@@ -64,7 +70,10 @@ export class OrganizationRepository implements IOrganizationRepository {
 
   async searchOrganizations(query: any): Promise<IOrganization[]> {
     const organizations = await OrganizationModel.find(query)
-      .populate("userId", "fullName email phoneNumber profilePicture")
+      .populate({
+        path: "userId",
+        select: "fullName email phoneNumber profilePicture",
+      })
       .sort({ createdAt: -1 });
     return organizations;
   }
