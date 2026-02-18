@@ -6,7 +6,7 @@ import { streamServerClient } from "../../configs/stream";
 
 let userRepository = new UserRepository();
 
-export class ChatService {
+export class MessageService {
   async generateStreamToken(userId: string) {
     const user = await userRepository.getUserById(userId);
     if (!user) {

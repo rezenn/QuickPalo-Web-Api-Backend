@@ -1,19 +1,19 @@
 import { Router } from "express";
-import { ChatController } from "../../controllers/chat/chat.controller";
+import { MessageController } from "../../controllers/message/message.controller";
 import { AuthorizedMiddleware } from "../../middlewares/authorized.middleware";
 
-let chatController = new ChatController();
+let messageController = new MessageController();
 const router = Router();
 
 router.get(
   "/stream-token",
   AuthorizedMiddleware,
-  chatController.getStreamToken,
+  messageController.getStreamToken,
 );
 router.post(
   "/send-to-org",
   AuthorizedMiddleware,
-  chatController.sendMessageToOrganization,
+  messageController.sendMessageToOrganization,
 );
 
 export default router;

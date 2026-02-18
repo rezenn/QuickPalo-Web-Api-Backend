@@ -1,9 +1,8 @@
 import { Request, Response } from "express";
+import { MessageService } from "../../services/message/message.service";
 
-import { ChatService } from "../../services/chat/chat.service";
-
-let chatService = new ChatService();
-export class ChatController {
+let messageService = new MessageService();
+export class MessageController {
   async getStreamToken(req: Request, res: Response) {
     try {
       const userId = req.user?._id;
@@ -13,7 +12,7 @@ export class ChatController {
           .json({ success: false, message: "Unauthorized" });
       }
 
-      const data = await chatService.generateStreamToken(userId);
+      const data = await messageService.generateStreamToken(userId);
 
       return res.status(200).json({
         success: true,
@@ -47,7 +46,7 @@ export class ChatController {
         });
       }
 
-      const result = await chatService.sendMessageToOrganization(
+      const result = await messageService.sendMessageToOrganization(
         senderId.toString(),
         orgUserId,
         message,
