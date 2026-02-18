@@ -14,17 +14,6 @@ router.post("/register", authController.createUser);
 router.post("/login", authController.loginUser);
 router.get("/users", authController.getAllUsers);
 
-router.get(
-  "/stream-token",
-  AuthorizedMiddleware,
-  authController.getStreamToken,
-);
-router.post(
-  "/send-to-org",
-  AuthorizedMiddleware,
-  authController.sendMessageToOrganization,
-);
-
 router.get("/:id", authController.getOneUser);
 router.delete("/:id", authController.deleteUser);
 router.put(
