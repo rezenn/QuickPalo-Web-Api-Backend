@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRoutes from "./routes/user/auth.route";
 import adminUserRoutes from "./routes/admin/auth.route";
 import organizationDetailsRoutes from "./routes/organization/organization.route";
+import appointmentRoutes from "./routes/appointment/appointment.routes";
 import chatRoutes from "./routes/message/message.route";
 import cors from "cors";
 import path from "path";
@@ -28,6 +29,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/message", chatRoutes);
 app.use("/api/admin/auth", adminUserRoutes);
 app.use("/api/organizations", organizationDetailsRoutes);
+app.use("/api/appointments", appointmentRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");
