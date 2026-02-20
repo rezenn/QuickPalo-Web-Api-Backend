@@ -107,7 +107,7 @@ export class AppointmentService {
     return appointments;
   }
 
-  async updateAppoitment(
+  async updateAppointment(
     appointmentId: string,
     updateData: Partial<CreateAppointmentDtoType>,
     userId: string,
