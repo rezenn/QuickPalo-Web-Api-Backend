@@ -9,7 +9,7 @@ export interface IAppointmentRepository {
   ): Promise<IAppointment>;
   getAppointmentById(userId: string): Promise<IAppointment | null>;
   getAppointmentByUser(userId: string): Promise<IAppointment[]>;
-  getAppointmentByOrgaanization(
+  getAppointmentByOrganization(
     organizationId: string,
     filter?: any,
   ): Promise<IAppointment[]>;
@@ -26,7 +26,7 @@ export interface IAppointmentRepository {
     startTime: string,
     endTime: string,
   ): Promise<boolean>;
-  getAppointmentByDaterange(
+  getAppointmentByDateRange(
     organizationId: string,
     startDate: Date,
     endDate: Date,
@@ -82,7 +82,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     });
     return appointments;
   }
-  async getAppointmentByOrgaanization(
+  async getAppointmentByOrganization(
     organizationId: string,
     filters?: any,
   ): Promise<IAppointment[]> {
@@ -171,7 +171,7 @@ export class AppointmentRepository implements IAppointmentRepository {
     });
     return !conflictingAppoitment;
   }
-  async getAppointmentByDaterange(
+  async getAppointmentByDateRange(
     organizationId: string,
     startDate: Date,
     endDate: Date,
