@@ -41,3 +41,13 @@ export const AppointmentQueryDto = z.object({
 });
 
 export type AppointmentQueryDtoType = z.infer<typeof AppointmentQueryDto>;
+
+export const CheckAvailabilityDto = z.object({
+  organizationId: z.string().min(1, "Organization ID is required"),
+  date: z.string().or(z.date()),
+  startTime: z.string().min(1, "Start time is required"),
+  endTime: z.string().min(1, "End time is required"),
+  departmentId: z.string().optional(),
+});
+
+export type CheckAvailabilityDtoType = z.infer<typeof CheckAvailabilityDto>;

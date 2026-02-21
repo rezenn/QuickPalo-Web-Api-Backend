@@ -3,7 +3,6 @@ import { CreateAppointmentDtoType } from "../../dtos/appointment.dto";
 import { HttpError } from "../../errors/http-error";
 import mongoose from "mongoose";
 import { OrganizationModel } from "../../models/organization.model";
-import { UserModel } from "../../models/user.model";
 import { sendEmail } from "../../configs/email";
 import { AppointmentModel } from "../../models/appointment.model";
 
@@ -57,7 +56,6 @@ export class AppointmentService {
       );
     }
 
-    // Create the appointment
     const newAppointment = await appointmentRepository.createAppointment({
       ...appointmentData,
       userId: user?._id?.toString() || "guest",
@@ -286,19 +284,40 @@ export class AppointmentService {
     date: Date,
     startTime: string,
     endTime: string,
+    departmentId?: string,
   ) {
     if (!mongoose.Types.ObjectId.isValid(organizationId)) {
       throw new HttpError(400, "Invalid organization ID");
     }
 
-    const isAvailable = await appointmentRepository.checkAvailability(
+    if (departmentId && !mongoose.Types.ObjectId.isValid(departmentId)) {
+      throw new HttpError(400, "Invalid department ID format");
+    }
+
+    if (departmentId) {
+      const organization = await OrganizationModel.findById(organizationId);
+      if (!organization) {
+        throw new HttpError(404, "Organization not found");
+      }
+
+      const departmentExists = organization.departments?.some(
+        (dept: any) => dept._id?.toString() === departmentId,
+      );
+
+      if (!departmentExists) {
+        throw new HttpError(400, "Department not found in this organization");
+      }
+    }
+
+    const availability = await appointmentRepository.checkAvailability(
       organizationId,
       date,
       startTime,
       endTime,
+      departmentId,
     );
 
-    return { isAvailable };
+    return availability;
   }
 
   async getAppointmentsByDateRange(

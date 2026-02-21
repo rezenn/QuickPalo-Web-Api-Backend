@@ -46,7 +46,7 @@ router.patch(
 );
 
 // admin routes
-router.get("/", AuthorizedMiddleware, appointmentController.deleteAppointment);
+router.get("/", AuthorizedMiddleware, appointmentController.getAllAppointments);
 router.delete(
   "/:id",
   AuthorizedMiddleware,

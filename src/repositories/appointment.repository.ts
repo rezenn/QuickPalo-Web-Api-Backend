@@ -2,6 +2,7 @@ import { QueryFilter } from "mongoose";
 import { AppointmentModel, IAppointment } from "../models/appointment.model";
 import { CreateAppointmentDtoType } from "../dtos/appointment.dto";
 import mongoose from "mongoose";
+import { OrganizationModel } from "../models/organization.model";
 
 export interface IAppointmentRepository {
   createAppointment(
@@ -25,7 +26,13 @@ export interface IAppointmentRepository {
     date: Date,
     startTime: string,
     endTime: string,
-  ): Promise<boolean>;
+    departmentId?: string,
+  ): Promise<{
+    isAvailable: boolean;
+    bookedCount?: number;
+    departmentName?: string;
+    maxCapacity?: number;
+  }>;
   getAppointmentByDateRange(
     organizationId: string,
     startDate: Date,
@@ -155,21 +162,53 @@ export class AppointmentRepository implements IAppointmentRepository {
     date: Date,
     startTime: string,
     endTime: string,
-  ): Promise<boolean> {
-    const startofDay = new Date(date);
-    startofDay.setHours(0, 0, 0, 0);
+    departmentId?: string, // Make departmentId optional
+  ): Promise<{
+    isAvailable: boolean;
+    bookedCount?: number;
+    departmentName?: string;
+  }> {
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
 
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    const conflictingAppoitment = await AppointmentModel.findOne({
+    // Base query
+    const query: any = {
       organizationId,
-      date: { $gte: startofDay, $lte: endOfDay },
+      date: { $gte: startOfDay, $lte: endOfDay },
       "timeslot.startTime": startTime,
       "timeslot.endTime": endTime,
       status: { $nin: ["cancelled", "completed"] },
-    });
-    return !conflictingAppoitment;
+    };
+
+    if (departmentId) {
+      query.departmentId = departmentId;
+
+      const conflictingAppointment = await AppointmentModel.findOne(query);
+
+      if (conflictingAppointment) {
+        const organization = await OrganizationModel.findById(organizationId);
+        const department = organization?.departments?.find(
+          (dept: any) => dept._id?.toString() === departmentId,
+        );
+
+        return {
+          isAvailable: false,
+          bookedCount: 1,
+          departmentName: department?.name,
+        };
+      }
+
+      return { isAvailable: true, bookedCount: 0 };
+    } else {
+      const count = await AppointmentModel.countDocuments(query);
+      return {
+        isAvailable: count === 0,
+        bookedCount: count,
+      };
+    }
   }
   async getAppointmentByDateRange(
     organizationId: string,

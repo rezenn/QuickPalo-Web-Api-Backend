@@ -221,7 +221,8 @@ export class AppointmentController {
 
   async checkAvailability(req: Request, res: Response) {
     try {
-      const { organizationId, date, startTime, endTime } = req.query;
+      const { organizationId, date, startTime, endTime, departmentId } =
+        req.query;
 
       if (!organizationId || !date || !startTime || !endTime) {
         return res.status(400).json({
@@ -236,11 +237,21 @@ export class AppointmentController {
         new Date(date as string),
         startTime as string,
         endTime as string,
+        departmentId as string,
       );
+
+      let message = "Availability checked successfully";
+      if (!availability.isAvailable) {
+        if (availability.departmentName) {
+          message = `Department "${availability.departmentName}" is already booked for this time slot`;
+        } else {
+          message = `This time slot is already booked (${availability.bookedCount} appointment(s) found)`;
+        }
+      }
 
       return res.status(200).json({
         success: true,
-        message: "Availability checked successfully",
+        message,
         data: availability,
       });
     } catch (error: Error | any) {
