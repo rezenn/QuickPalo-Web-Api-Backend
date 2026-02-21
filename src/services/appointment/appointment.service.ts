@@ -5,13 +5,14 @@ import mongoose from "mongoose";
 import { OrganizationModel } from "../../models/organization.model";
 import { UserModel } from "../../models/user.model";
 import { sendEmail } from "../../configs/email";
+import { AppointmentModel } from "../../models/appointment.model";
 
 let appointmentRepository = new AppointmentRepository();
 
 export class AppointmentService {
   async createAppointment(
     appointmentData: CreateAppointmentDtoType,
-    userId?: string,
+    user?: any,
   ) {
     if (!mongoose.Types.ObjectId.isValid(appointmentData.organizationId)) {
       throw new HttpError(400, "Invalid organization ID");
@@ -24,43 +25,44 @@ export class AppointmentService {
       throw new HttpError(404, "Organization not found");
     }
 
-    const departmentExists = organization.departments?.some(
-      (dept: any) =>
-        dept._id?.toString() === appointmentData.departmentId ||
-        dept.name === appointmentData.departmentName,
+    if (!appointmentData.departmentId) {
+      throw new HttpError(400, "Department ID is required");
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(appointmentData.departmentId)) {
+      throw new HttpError(400, "Invalid department ID format");
+    }
+
+    const selectedDepartment = organization.departments?.find(
+      (dept: any) => dept._id?.toString() === appointmentData.departmentId,
     );
-    if (
-      !departmentExists &&
-      organization.departments &&
-      organization.departments.length > 0
-    ) {
+
+    if (!selectedDepartment) {
       throw new HttpError(400, "Department not found in this organization");
     }
-    const maxDate = new Date();
-    maxDate.setDate(maxDate.getDate() + (organization.advanceBookingDays || 7));
-    const appointmentDate = new Date(appointmentData.date);
-    if (appointmentDate > maxDate) {
+
+    const existingAppointmentInSameDepartment = await AppointmentModel.findOne({
+      organizationId: appointmentData.organizationId,
+      departmentId: appointmentData.departmentId,
+      date: new Date(appointmentData.date),
+      "timeslot.startTime": appointmentData.timeslot.startTime,
+      "timeslot.endTime": appointmentData.timeslot.endTime,
+      status: { $nin: ["cancelled", "completed"] },
+    });
+
+    if (existingAppointmentInSameDepartment) {
       throw new HttpError(
-        400,
-        `Appointment can only be booked up to ${organization.advanceBookingDays || 7} days in advance`,
+        409,
+        `This time slot is already booked for department: ${selectedDepartment.name}`,
       );
     }
 
-    const isAvailable = await appointmentRepository.checkAvailability(
-      appointmentData.organizationId,
-      appointmentData.date,
-      appointmentData.timeslot.startTime,
-      appointmentData.timeslot.endTime,
-    );
-    if (!isAvailable) {
-      throw new HttpError(409, "Time slot is not available");
-    }
+    // Create the appointment
     const newAppointment = await appointmentRepository.createAppointment({
       ...appointmentData,
-      userId: userId || appointmentData.userId || "guest",
+      userId: user?._id?.toString() || "guest",
+      departmentName: selectedDepartment.name,
     });
-
-    await this.sendAppointmentConfirmationEmail(newAppointment);
 
     return newAppointment;
   }
@@ -110,33 +112,34 @@ export class AppointmentService {
   async updateAppointment(
     appointmentId: string,
     updateData: Partial<CreateAppointmentDtoType>,
-    userId: string,
-    userRole: string,
+    user: any,
   ) {
     if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
       throw new HttpError(400, "Invalid appoitment ID");
     }
-    const existingAppoitment =
+    const existingAppointment =
       await appointmentRepository.getAppointmentById(appointmentId);
 
-    if (!existingAppoitment) {
+    if (!existingAppointment) {
       throw new HttpError(404, "Appoitment not found");
     }
 
-    if (
-      userRole !== "admin" &&
-      existingAppoitment.userId.toString() !== userId &&
-      existingAppoitment.organizationId.toString() !== userId
-    ) {
+    const isAdmin = user.role === "admin";
+    const isOwner =
+      existingAppointment.userId.toString() === user._id.toString();
+    const isOrganization =
+      existingAppointment.organizationId.toString() === user._id.toString();
+
+    if (!isAdmin && !isOwner && !isOrganization) {
       throw new HttpError(
         403,
-        "You do not have permission to update this appoitment",
+        "You don't have permission to update this appointment",
       );
     }
 
     if (updateData.timeslot || updateData.date) {
-      const newDate = updateData.date || existingAppoitment.date;
-      const newTimeslot = updateData.timeslot || existingAppoitment.timeslot;
+      const newDate = updateData.date || existingAppointment.date;
+      const newTimeslot = updateData.timeslot || existingAppointment.timeslot;
     }
 
     const updateAppointment = await appointmentRepository.updateAppointment(
@@ -153,53 +156,70 @@ export class AppointmentService {
     return updateAppointment;
   }
 
-  async cancelAppointment(
-    appointmentId: string,
-    userId: string,
-    userRole: string,
-  ) {
+  async cancelAppointment(appointmentId: string, user: any) {
     if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
-      throw new HttpError(400, "Invalid appoitment ID");
+      throw new HttpError(400, "Invalid appointment ID");
     }
 
-    const existingAppoitment =
+    const existingAppointment =
       await appointmentRepository.getAppointmentById(appointmentId);
 
-    if (!existingAppoitment) {
-      throw new HttpError(404, "Appoitment not found");
+    if (!existingAppointment) {
+      throw new HttpError(404, "Appointment not found");
     }
 
-    if (
-      userRole !== "admin" &&
-      existingAppoitment.userId.toString() !== userId &&
-      existingAppoitment.organizationId.toString() !== userId
-    ) {
+    const isAdmin = user.role === "admin";
+
+    // Check if user is the appointment owner (regular user)
+    const isOwner =
+      existingAppointment.userId.toString() === user._id.toString();
+
+    let isOrganization = false;
+    if (user.role === "organization") {
+      const organizationDetails = await OrganizationModel.findOne({
+        userId: user._id,
+      });
+
+      if (organizationDetails) {
+        isOrganization =
+          existingAppointment.organizationId.toString() ===
+          organizationDetails._id.toString();
+      }
+    }
+
+    if (!isAdmin && !isOwner && !isOrganization) {
       throw new HttpError(
         403,
-        "You do not have permission to cancel this appoitment",
+        "You don't have permission to cancel this appointment",
       );
     }
 
-    if (existingAppoitment.status === "completed") {
+    if (!isAdmin && !isOwner && !isOrganization) {
+      throw new HttpError(
+        403,
+        "You don't have permission to cancel this appointment.",
+      );
+    }
+
+    if (existingAppointment.status === "completed") {
       throw new HttpError(400, "Cannot cancel a completed appointment");
     }
 
-    if (existingAppoitment.status === "cancelled") {
-      throw new HttpError(400, "Appoitment is already cancelled");
+    if (existingAppointment.status === "cancelled") {
+      throw new HttpError(400, "Appointment is already cancelled");
     }
 
     const cancelledAppointment =
       await appointmentRepository.cancelAppointment(appointmentId);
 
-    if (!cancelledAppointment) {
-      throw new HttpError(500, "Failed to cancel appointment");
+    if (cancelledAppointment) {
+      await this.sendAppointmentCancellationEmail(cancelledAppointment);
     }
 
-    await this.sendAppointmentCancellationEmail(cancelledAppointment);
     return cancelledAppointment;
   }
 
-  async completeAppointment(appointmentId: string, organizationId: string) {
+  async completeAppointment(appointmentId: string, user: any) {
     if (!mongoose.Types.ObjectId.isValid(appointmentId)) {
       throw new HttpError(400, "Invalid appoitment ID");
     }
@@ -210,10 +230,15 @@ export class AppointmentService {
     if (!existingAppointment) {
       throw new HttpError(404, "Appointment not found");
     }
-    if (existingAppointment.organizationId.toString() !== organizationId) {
+
+    const isAdmin = user.role === "admin";
+    const isOrganization =
+      existingAppointment.organizationId.toString() === user._id.toString();
+
+    if (!isAdmin && !isOrganization) {
       throw new HttpError(
         403,
-        "Only the organization can mark appointments as completed",
+        "Only the organization or admin can mark appointments as completed",
       );
     }
 
@@ -280,9 +305,30 @@ export class AppointmentService {
     organizationId: string,
     startDate: Date,
     endDate: Date,
+    user: any,
   ) {
     if (!mongoose.Types.ObjectId.isValid(organizationId)) {
       throw new HttpError(400, "Invalid organization ID");
+    }
+
+    const isAdmin = user.role === "admin";
+
+    let isOrganization = false;
+    if (user.role === "organization") {
+      const userOrganization = await OrganizationModel.findOne({
+        userId: user._id,
+      });
+
+      if (userOrganization) {
+        isOrganization = organizationId === userOrganization._id.toString();
+      }
+    }
+
+    if (!isAdmin && !isOrganization) {
+      throw new HttpError(
+        403,
+        "You don't have permission to view these appointments",
+      );
     }
 
     const appointments = await appointmentRepository.getAppointmentByDateRange(
@@ -293,6 +339,7 @@ export class AppointmentService {
 
     return appointments;
   }
+
   async getAllAppointments(filters: {
     page: number;
     limit: number;

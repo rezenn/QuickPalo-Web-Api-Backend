@@ -18,11 +18,9 @@ export class AppointmentController {
         });
       }
 
-      const userId = req.user?._id?.toString();
-
       const newAppointment = await appointmentService.createAppointment(
         parsedData.data,
-        userId,
+        req.user,
       );
 
       return res.status(201).json({
@@ -127,15 +125,6 @@ export class AppointmentController {
   async updateAppointment(req: Request, res: Response) {
     try {
       const appointmentId = req.params.id;
-      const userId = req.user?._id?.toString();
-      const userRole = req.user?.role || "user";
-
-      if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: "User not authenticated",
-        });
-      }
 
       const parsedData = CreateAppointmentDto.partial().safeParse(req.body);
 
@@ -149,8 +138,7 @@ export class AppointmentController {
       const updatedAppointment = await appointmentService.updateAppointment(
         appointmentId,
         parsedData.data,
-        userId,
-        userRole,
+        req.user,
       );
 
       return res.status(200).json({
@@ -169,20 +157,12 @@ export class AppointmentController {
   async cancelAppointment(req: Request, res: Response) {
     try {
       const appointmentId = req.params.id;
-      const userId = req.user?._id?.toString();
-      const userRole = req.user?.role || "user";
-
-      if (!userId) {
-        return res.status(401).json({
-          success: false,
-          message: "User not authenticated",
-        });
-      }
+      //   const userId = req.user?._id?.toString();
+      //   const userRole = req.user?.role || "user";
 
       const cancelledAppointment = await appointmentService.cancelAppointment(
         appointmentId,
-        userId,
-        userRole,
+        req.user,
       );
 
       return res.status(200).json({
@@ -201,18 +181,10 @@ export class AppointmentController {
   async completeAppointment(req: Request, res: Response) {
     try {
       const appointmentId = req.params.id;
-      const organizationId = req.user?._id?.toString();
-
-      if (!organizationId) {
-        return res.status(401).json({
-          success: false,
-          message: "User not authenticated",
-        });
-      }
 
       const completedAppointment = await appointmentService.completeAppointment(
         appointmentId,
-        organizationId,
+        req.user,
       );
 
       return res.status(200).json({
@@ -343,21 +315,11 @@ export class AppointmentController {
         });
       }
 
-      // Check permissions
-      const userRole = req.user?.role;
-      const userId = req.user?._id?.toString();
-
-      if (userRole !== "admin" && userId !== organizationId) {
-        return res.status(403).json({
-          success: false,
-          message: "You don't have permission to view these appointments",
-        });
-      }
-
       const appointments = await appointmentService.getAppointmentsByDateRange(
         organizationId as string,
         new Date(startDate as string),
         new Date(endDate as string),
+        req.user,
       );
 
       return res.status(200).json({

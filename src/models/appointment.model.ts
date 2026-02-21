@@ -12,9 +12,9 @@ const appointmentMongoSchema: Schema = new Schema(
     clientEmail: { type: String, required: true },
     clientPhoneNumber: { type: String, required: true },
     notes: { type: String, required: false },
-    timesolt: {
+    timeslot: {
       startTime: { type: String, required: true },
-      endtime: { type: String, required: true },
+      endTime: { type: String, required: true },
       isAvailable: { type: Boolean, default: true },
     },
     date: { type: String, required: true },
