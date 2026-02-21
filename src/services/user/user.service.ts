@@ -297,7 +297,7 @@ export class UserService {
     );
 
     if (!vaildPassword) {
-      throw new HttpError(401, "Invaild credenrials");
+      throw new HttpError(401, "Invaild credentials");
     }
 
     const payload = {
@@ -335,41 +335,131 @@ export class UserService {
     <html>
     <head>
       <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        body { 
+          font-family: Arial, sans-serif; 
+          line-height: 1.6; 
+          color: #333; 
+          margin: 0;
+          padding: 0;
+        }
+        .container { 
+          max-width: 600px; 
+          margin: 20px auto; 
+          background: #ffffff;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header { 
+          background-color: #B61BE1; 
+          color: white; 
+          padding: 30px 20px; 
+          text-align: center; 
+        }
+        .header h2 {
+          margin: 0;
+          font-size: 28px;
+          font-weight: 600;
+        }
+        .content { 
+          padding: 30px; 
+        }
+        .details { 
+          background-color: #f8f9fa; 
+          padding: 20px; 
+          border-radius: 8px; 
+          margin: 20px 0; 
+          border-left: 4px solid #B61BE1;
+        }
+        .details p {
+          margin: 10px 0;
+        }
+    
+        .button-container {
+          text-align: center;
+          color: white; 
+          margin: 30px 0;
+        }
         .button { 
           display: inline-block; 
-          padding: 12px 24px; 
-          background-color: #007bff; 
-          color: white; 
+          padding: 14px 32px; 
+          background-color: #B61BE1; 
+          color: white !important;
           text-decoration: none; 
-          border-radius: 4px; 
+          border-radius: 6px; 
           font-weight: bold;
+          font-size: 16px;
+          transition: background-color 0.3s;
+          border: none;
         }
-        .footer { margin-top: 30px; font-size: 12px; color: #666; }
+     
+        .footer { 
+          margin-top: 30px; 
+          padding-top: 20px;
+          border-top: 1px solid #dee2e6;
+          font-size: 14px; 
+          color: #6c757d; 
+          text-align: center; 
+        }
+        .footer p {
+          margin: 5px 0;
+        }
+        .expiry-note {
+          font-size: 14px;
+          color: #6c757d;
+          text-align: center;
+          margin: 15px 0;
+        }
+        .link-fallback {
+          background-color: #f8f9fa;
+          padding: 12px;
+          border-radius: 6px;
+          font-family: monospace;
+          word-break: break-all;
+          margin: 15px 0;
+        }
       </style>
     </head>
     <body>
       <div class="container">
-        <h2>Password Reset Request</h2>
-        <p>Hello ${user.fullName || "User"},</p>
-        <p>You have requested to reset your password. Click the button below to proceed:</p>
-        <p>
-          <a href="${resetLink}" class="button">Reset Password</a>
-        </p>
-        <p>Or copy and paste this link in your browser:</p>
-        <p><code>${resetLink}</code></p>
-        <p>This link will expire in 1 hour.</p>
-        <p>If you didn't request this password reset, please ignore this email.</p>
+        <div class="header">
+          <h2>Password Reset Request</h2>
+        </div>
+        
+        <div class="content">
+          <p>Dear <strong>${user.fullName || "User"}</strong>,</p>
+          <p>We received a request to reset the password for your QuickPalo account. To proceed with resetting your password, click the button below:</p>
+          
+          <div class="button-container">
+            <a href="${resetLink}" class="button">Reset Password</a>
+          </div>
+          
+          <div class="details">
+            <p><strong> Request Details:</strong></p>
+            <p>• <strong>Account Email:</strong> ${user.email}</p>
+            <p>• <strong>Request Time:</strong> ${new Date().toLocaleString()}</p>
+            <p>• <strong>Token Expiry:</strong> 1 hour from request</p>
+          </div>
+
+          <div class="expiry-note">
+            This password reset link will expire in <strong>1 hour</strong> for security reasons.
+          </div>
+          
+        </div>
+        
         <div class="footer">
-          <p>Thank you,<br>The QuickPalo Team</p>
+          <p>--- <strong>QuickPalo</strong> ---</p>
+          <p style="margin-top: 15px; font-size: 12px;">
+            This is an automated message, please do not reply to this email.<br>
+            &copy; ${new Date().getFullYear()} QuickPalo. All rights reserved.
+          </p>
         </div>
       </div>
     </body>
     </html>
   `;
 
-    await sendEmail(user.email, "Password Reset - QuickPalo", html);
+    await sendEmail(user.email, "Password Reset Request - QuickPalo", html);
     return user;
   }
 
@@ -391,6 +481,4 @@ export class UserService {
       throw new HttpError(400, "Invalid or expired token");
     }
   }
-
-
 }
