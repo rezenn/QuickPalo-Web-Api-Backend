@@ -210,12 +210,17 @@ export class AppointmentRepository implements IAppointmentRepository {
       };
     }
   }
+
   async getAppointmentByDateRange(
     organizationId: string,
     startDate: Date,
     endDate: Date,
   ): Promise<IAppointment[]> {
-    throw new Error("Method not implemented.");
+    const appointments = await AppointmentModel.find({
+      organizationId,
+      date: { $gte: startDate, $lte: endDate },
+    }).sort({ date: 1, "timeslot.startTime": 1 });
+    return appointments;
   }
   async findAll({
     page,

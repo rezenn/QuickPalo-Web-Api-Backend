@@ -141,6 +141,30 @@ export class UserService {
       },
       { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
       {
+        $addFields: {
+          departments: {
+            $map: {
+              input: "$departments",
+              as: "dept",
+              in: {
+                $mergeObjects: [
+                  "$$dept",
+                  {
+                    _id: {
+                      $cond: {
+                        if: { $ifNull: ["$$dept._id", false] },
+                        then: "$$dept._id",
+                        else: { $toString: "$$dept._id" }, 
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      {
         $project: {
           _id: 1,
           userId: 1,
@@ -153,7 +177,7 @@ export class UserService {
           contactEmail: 1,
           contactPhone: 1,
           workingHours: 1,
-          departments: 1,
+          departments: 1, 
           fees: 1,
           appointmentDuration: 1,
           advanceBookingDays: 1,

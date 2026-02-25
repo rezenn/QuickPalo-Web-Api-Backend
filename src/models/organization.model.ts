@@ -1,24 +1,27 @@
 import mongoose, { Document, Schema } from "mongoose";
 import { Organization } from "../types/organization.type";
 
-const WorkingHourSchema = new Schema({
-  day: {
-    type: String,
-    enum: [
-      "monday",
-      "tuesday",
-      "wednesday",
-      "thursday",
-      "friday",
-      "saturday",
-      "sunday",
-    ],
-    required: true,
+const WorkingHourSchema = new Schema(
+  {
+    day: {
+      type: String,
+      enum: [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+      ],
+      required: true,
+    },
+    openingTime: { type: String, required: true },
+    closingTime: { type: String, required: true },
+    isWorking: { type: Boolean, default: true },
   },
-  openingTime: { type: String, required: true },
-  closingTime: { type: String, required: true },
-  isWorking: { type: Boolean, default: true },
-});
+  { _id: true },
+);
 
 const DepartmentSchema = new Schema({
   name: { type: String, required: true },

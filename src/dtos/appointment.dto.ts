@@ -8,6 +8,7 @@ export const CreateAppointmentDto = AppointmentSchema.omit({
   userId: true,
   status: true,
   paymentStatus: true,
+  departmentName: true,
 }).extend({
   userId: z.string().optional(),
 });

@@ -23,8 +23,8 @@ const appointmentMongoSchema: Schema = new Schema(
       enum: ["pending", "confirmed", "cancelled", "completed", "no_show"],
       default: "pending",
     },
-    paymentAmout: { type: Number, required: true, default: 0, min: 0 },
-    PaymentMethod: {
+    paymentAmount: { type: Number, required: true, default: 0, min: 0 },
+    paymentMethod: {
       type: String,
       enum: ["online", "cash"],
       default: "online",
