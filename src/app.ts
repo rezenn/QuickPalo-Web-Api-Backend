@@ -6,6 +6,7 @@ import adminUserRoutes from "./routes/admin/auth.route";
 import organizationDetailsRoutes from "./routes/organization/organization.route";
 import appointmentRoutes from "./routes/appointment/appointment.routes";
 import chatRoutes from "./routes/message/message.route";
+import paymentRoutes from "./routes/payment.routes";
 import cors from "cors";
 import path from "path";
 
@@ -30,6 +31,7 @@ app.use("/api/message", chatRoutes);
 app.use("/api/admin/auth", adminUserRoutes);
 app.use("/api/organizations", organizationDetailsRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running");

@@ -62,6 +62,10 @@ export class AppointmentService {
       departmentName: selectedDepartment.name,
     });
 
+    this.sendAppointmentConfirmationEmail(newAppointment).catch((err) =>
+      console.error("Failed to send confirmation email:", err),
+    );
+
     return newAppointment;
   }
 
