@@ -230,8 +230,18 @@ export class AppointmentService {
     }
 
     const isAdmin = user.role === "admin";
-    const isOrganization =
-      existingAppointment.organizationId.toString() === user._id.toString();
+    let isOrganization = false;
+
+    if (user.role === "organization") {
+      const organizationDetails = await OrganizationModel.findOne({
+        userId: user._id,
+      });
+      if (organizationDetails) {
+        isOrganization =
+          existingAppointment.organizationId.toString() ===
+          organizationDetails._id.toString();
+      }
+    }
 
     if (!isAdmin && !isOrganization) {
       throw new HttpError(

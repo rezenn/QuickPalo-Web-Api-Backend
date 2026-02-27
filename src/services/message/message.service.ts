@@ -64,11 +64,6 @@ export class MessageService {
           ? "user"
           : organizationUser.role;
 
-      console.log("Upserting users with roles:", {
-        sender: { role: sender.role, mappedRole: senderRole },
-        org: { role: organizationUser.role, mappedRole: orgRole },
-      });
-
       // Upsert users to Stream with more complete info
       await streamServerClient.upsertUsers([
         {
@@ -116,6 +111,29 @@ export class MessageService {
     } catch (error: any) {
       console.error("STREAM ERROR:", error);
       throw new HttpError(500, error.message || "Stream error");
+    }
+  }
+
+  async getMessages(channelId: string) {
+    try {
+      const channel = streamServerClient.channel("messaging", channelId);
+      const result = await channel.query({
+        messages: { limit: 100 },
+      });
+
+      return (result.messages || []).map((msg: any) => ({
+        id: msg.id,
+        channel_id: channelId,
+        text: msg.text,
+        created_at: msg.created_at,
+        user: {
+          id: msg.user?.id,
+          name: msg.user?.name,
+          image: msg.user?.image,
+        },
+      }));
+    } catch (error: any) {
+      throw new HttpError(500, error.message || "Failed to get messages");
     }
   }
 }

@@ -10,6 +10,12 @@ router.get(
   AuthorizedMiddleware,
   messageController.getStreamToken,
 );
+router.get(
+  "/get-messages",
+  AuthorizedMiddleware,
+  messageController.getMessages,
+);
+
 router.post(
   "/send-to-org",
   AuthorizedMiddleware,

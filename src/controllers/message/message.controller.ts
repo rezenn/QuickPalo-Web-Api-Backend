@@ -65,4 +65,20 @@ export class MessageController {
       });
     }
   }
+
+  async getMessages(req: Request, res: Response) {
+    try {
+      const { channelId } = req.query;
+      if (!channelId)
+        return res
+          .status(400)
+          .json({ success: false, message: "channelId required" });
+      const messages = await messageService.getMessages(channelId as string);
+      return res.status(200).json({ success: true, data: messages });
+    } catch (error: any) {
+      return res
+        .status(error.statusCode || 500)
+        .json({ success: false, message: error.message });
+    }
+  }
 }

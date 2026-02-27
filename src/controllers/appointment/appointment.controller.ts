@@ -3,6 +3,7 @@ import { AppointmentService } from "../../services/appointment/appointment.servi
 import { CreateAppointmentDto } from "../../dtos/appointment.dto";
 import z from "zod";
 import { HttpError } from "../../errors/http-error";
+import { OrganizationModel } from "../../models/organization.model";
 
 let appointmentService = new AppointmentService();
 
@@ -91,11 +92,22 @@ export class AppointmentController {
       const userRole = req.user?.role;
       const userId = req.user?._id?.toString();
 
-      if (userRole !== "admin" && userId !== organizationId) {
-        return res.status(403).json({
-          success: false,
-          message: "You don't have permission to view these appointments",
-        });
+      if (userRole !== "admin") {
+        if (userRole !== "organization") {
+          return res.status(403).json({
+            success: false,
+            message: "You don't have permission to view these appointments",
+          });
+        }
+
+        const userOrg = await OrganizationModel.findOne({ userId });
+
+        if (!userOrg || userOrg._id.toString() !== organizationId) {
+          return res.status(403).json({
+            success: false,
+            message: "You don't have permission to view these appointments",
+          });
+        }
       }
 
       const filters: any = {};
