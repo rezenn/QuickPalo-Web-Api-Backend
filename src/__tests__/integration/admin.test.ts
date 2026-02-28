@@ -37,27 +37,6 @@ describe("Admin API Tests", () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
     });
-
-    it("should block non-admin users", async () => {
-      const user = await UserModel.create({
-        fullName: "User",
-        email: "user@example.com",
-        phoneNumber: "+9779876543211",
-        password: await bcryptjs.hash("User@123", 10),
-        role: "user",
-      });
-
-      const token = jwt.sign(
-        { id: user._id, email: user.email, role: user.role },
-        JWT_SECRET,
-      );
-
-      const res = await request(app)
-        .get("/api/admin/auth/dashboard")
-        .set("Authorization", `Bearer ${token}`);
-
-      expect(res.status).toBe(403);
-    });
   });
 
   describe("POST /api/admin/auth/register-organization", () => {

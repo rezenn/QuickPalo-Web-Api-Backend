@@ -13,6 +13,8 @@ const userMongoSchema: Schema = new Schema(
       default: "user",
     },
     profilePicture: { type: String, required: false },
+    googleId: { type: String, required: false, sparse: true },
+    isGoogleUser: { type: Boolean, default: false },
   },
   {
     timestamps: true,
@@ -21,6 +23,8 @@ const userMongoSchema: Schema = new Schema(
 
 export interface IUser extends UserType, Document {
   _id: mongoose.Types.ObjectId;
+  googleId?: string;
+  isGoogleUser?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

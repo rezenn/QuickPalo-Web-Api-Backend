@@ -71,7 +71,7 @@ describe("Authentication Integration Tests", () => {
 
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty("success", false);
-      expect(response.body).toHaveProperty("message", "Invaild credenrials");
+      expect(response.body).toHaveProperty("message", "Invaild credentials");
     });
   });
 

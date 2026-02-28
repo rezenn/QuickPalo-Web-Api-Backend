@@ -1,8 +1,10 @@
 import { AuthController } from "../../controllers/user/auth.controller";
+
 import { AuthorizedMiddleware } from "../../middlewares/authorized.middleware";
 
 import { Router } from "express";
 import { uploads } from "../../middlewares/upload.middleware";
+
 let authController = new AuthController();
 
 const router = Router();
@@ -25,5 +27,7 @@ router.put(
 
 router.post("/request-password-reset", authController.requestPasswordChange);
 router.post("/reset-password/:token", authController.resetPassword);
+
+// router.post("/google", googleController.loginWithGoogle);
 
 export default router;
