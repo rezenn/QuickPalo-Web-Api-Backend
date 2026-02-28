@@ -52,8 +52,6 @@ export class OrganizationDetailsService {
     return organization;
   }
 
-  // In your organization.service.ts or wherever you fetch organization data
-
   async getOrganizationById(organizationId: string) {
     if (!mongoose.Types.ObjectId.isValid(organizationId)) {
       throw new HttpError(400, "Invalid organization ID");

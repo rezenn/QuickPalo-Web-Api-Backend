@@ -6,7 +6,7 @@ import adminUserRoutes from "./routes/admin/auth.route";
 import organizationDetailsRoutes from "./routes/organization/organization.route";
 import appointmentRoutes from "./routes/appointment/appointment.routes";
 import chatRoutes from "./routes/message/message.route";
-import paymentRoutes from "./routes/payment.routes";
+import paymentRoutes from "./routes/payment/payment.routes";
 import cors from "cors";
 import path from "path";
 

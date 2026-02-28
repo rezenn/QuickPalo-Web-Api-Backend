@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { HttpError } from "../../errors/http-error";
+import { AppointmentModel } from "../../models/appointment.model";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-02-25.clover",
@@ -9,15 +10,19 @@ export class PaymentService {
   async createPaymentIntent(
     amount: number,
     currency: string = "npr",
+    appointmentId?: string,
   ): Promise<string> {
     if (!process.env.STRIPE_SECRET_KEY) {
       throw new HttpError(500, "Stripe is not configured");
     }
 
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(amount * 100), 
+      amount: Math.round(amount * 100), // rupees → paisa
       currency,
       automatic_payment_methods: { enabled: true },
+      metadata: {
+        ...(appointmentId ? { appointmentId } : {}),
+      },
     });
 
     if (!paymentIntent.client_secret) {
@@ -25,6 +30,16 @@ export class PaymentService {
     }
 
     return paymentIntent.client_secret;
+  }
+
+  async markAppointmentPaid(appointmentId: string): Promise<void> {
+    const appointment = await AppointmentModel.findById(appointmentId);
+    if (!appointment) {
+      throw new HttpError(404, "Appointment not found");
+    }
+    await AppointmentModel.findByIdAndUpdate(appointmentId, {
+      paymentStatus: "paid",
+    });
   }
 
   async handleWebhookEvent(payload: Buffer, sig: string): Promise<void> {
@@ -44,17 +59,18 @@ export class PaymentService {
     }
 
     switch (event.type) {
-      case "payment_intent.succeeded":
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-
+      case "payment_intent.succeeded": {
+        const pi = event.data.object as Stripe.PaymentIntent;
+        const appointmentId = pi.metadata?.appointmentId;
+        if (appointmentId) {
+          await AppointmentModel.findByIdAndUpdate(appointmentId, {
+            paymentStatus: "paid",
+          });
+        }
         break;
-
-      case "payment_intent.payment_failed":
-        console.error(`Payment failed: ${event.data.object}`);
-        break;
-
+      }
       default:
-        console.error(`Unhandled event type: ${event.type}`);
+        console.log(`Unhandled Stripe event: ${event.type}`);
     }
   }
 }

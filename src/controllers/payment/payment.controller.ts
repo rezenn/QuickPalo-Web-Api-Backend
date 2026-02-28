@@ -6,7 +6,7 @@ const paymentService = new PaymentService();
 export class PaymentController {
   async createPaymentIntent(req: Request, res: Response) {
     try {
-      const { amount, currency } = req.body;
+      const { amount, currency, appointmentId } = req.body;
 
       if (!amount || isNaN(amount) || Number(amount) <= 0) {
         return res.status(400).json({
@@ -17,13 +17,39 @@ export class PaymentController {
 
       const clientSecret = await paymentService.createPaymentIntent(
         Number(amount),
-        currency || "usd",
+        currency || "npr",
+        appointmentId,
       );
 
       return res.status(200).json({
         success: true,
         message: "Payment intent created successfully",
         data: { clientSecret },
+      });
+    } catch (error: Error | any) {
+      return res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.message || "Internal server error",
+      });
+    }
+  }
+
+  async markAppointmentPaid(req: Request, res: Response) {
+    try {
+      const { appointmentId } = req.params;
+
+      if (!appointmentId) {
+        return res.status(400).json({
+          success: false,
+          message: "Appointment ID is required",
+        });
+      }
+
+      await paymentService.markAppointmentPaid(appointmentId);
+
+      return res.status(200).json({
+        success: true,
+        message: "Payment status updated",
       });
     } catch (error: Error | any) {
       return res.status(error.statusCode || 500).json({
