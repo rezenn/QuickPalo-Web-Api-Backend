@@ -17,11 +17,9 @@ describe("Authentication Integration Tests", () => {
     confirmPassword: "testpassword",
   };
 
-  describe("POST /api/auth/register", () => {
-    // nested describe block
+  describe("POST /api/auth/register", () => {// nested describe block
     test(// actual test case
-    "should register a new user", async () => {
-      // test case description
+    "should register a new user", async () => { // test case description
       const response = await request(app)
         .post("/api/auth/register")
         .send(testUser);
@@ -35,8 +33,7 @@ describe("Authentication Integration Tests", () => {
   });
 
   describe("POST /api/auth/login", () => {
-    beforeEach(async () => {
-      // Create a test user before each login test
+    beforeEach(async () => {  // Create a test user before each login test
       const hashedPassword = await bcryptjs.hash("Test@123", 10);
       await UserModel.create({
         fullName: "Test User",

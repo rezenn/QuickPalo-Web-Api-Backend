@@ -12,50 +12,17 @@ jest.mock("../../configs/email", () => ({
   sendEmail: jest.fn().mockResolvedValue(undefined),
 }));
 
-const VALID_WORKING_HOURS = [
-  {
-    day: "monday",
-    openingTime: "09:00",
-    closingTime: "17:00",
-    isWorking: true,
-  },
-  {
-    day: "tuesday",
-    openingTime: "09:00",
-    closingTime: "17:00",
-    isWorking: true,
-  },
-  {
-    day: "wednesday",
-    openingTime: "09:00",
-    closingTime: "17:00",
-    isWorking: true,
-  },
-  {
-    day: "thursday",
-    openingTime: "09:00",
-    closingTime: "17:00",
-    isWorking: true,
-  },
-  {
-    day: "friday",
-    openingTime: "09:00",
-    closingTime: "17:00",
-    isWorking: true,
-  },
-  {
-    day: "saturday",
-    openingTime: "10:00",
-    closingTime: "14:00",
-    isWorking: true,
-  },
-  {
-    day: "sunday",
-    openingTime: "00:00",
-    closingTime: "00:00",
-    isWorking: false,
-  },
-];
+// Mock Stripe
+jest.mock("stripe", () =>
+  jest.fn().mockImplementation(() => ({
+    paymentIntents: {
+      create: jest.fn().mockResolvedValue({ client_secret: "pi_test_secret" }),
+    },
+    webhooks: {
+      constructEvent: jest.fn(),
+    },
+  })),
+);
 
 describe("Appointment API Integration Tests", () => {
   let userToken: string;
@@ -113,7 +80,50 @@ describe("Appointment API Integration Tests", () => {
       street: "Main Street",
       city: "Kathmandu",
       contactEmail: "contact@hospital.com",
-      //   workingHours: VALID_WORKING_HOURS,
+      workingHours: [
+        {
+          day: "monday",
+          openingTime: "09:00",
+          closingTime: "17:00",
+          isWorking: true,
+        },
+        {
+          day: "tuesday",
+          openingTime: "09:00",
+          closingTime: "17:00",
+          isWorking: true,
+        },
+        {
+          day: "wednesday",
+          openingTime: "09:00",
+          closingTime: "17:00",
+          isWorking: true,
+        },
+        {
+          day: "thursday",
+          openingTime: "09:00",
+          closingTime: "17:00",
+          isWorking: true,
+        },
+        {
+          day: "friday",
+          openingTime: "09:00",
+          closingTime: "17:00",
+          isWorking: true,
+        },
+        {
+          day: "saturday",
+          openingTime: "10:00",
+          closingTime: "14:00",
+          isWorking: true,
+        },
+        {
+          day: "sunday",
+          openingTime: "00:00",
+          closingTime: "00:00",
+          isWorking: false,
+        },
+      ],
       departments: [{ name: "Cardiology" }],
       fees: 500,
       appointmentDuration: 30,
@@ -133,6 +143,35 @@ describe("Appointment API Integration Tests", () => {
         .post("/api/appointments")
         .set("Authorization", `Bearer ${userToken}`)
         .send({ organizationId: "bad-id" });
+
+      expect(res.status).toBe(400);
+    });
+
+ 
+
+    it("should return 400 if time slot already booked", async () => {
+      const deptId = organization.departments[0]._id.toString();
+      const appointmentPayload = {
+        organizationId: organization._id.toString(),
+        departmentId: deptId,
+        clientName: "John Doe",
+        clientEmail: "john@example.com",
+        clientPhoneNumber: "+977123456789",
+        date: "2025-06-15",
+        timeslot: { startTime: "09:00", endTime: "09:30", isAvailable: true },
+        paymentAmount: 500,
+        paymentMethod: "online",
+      };
+
+      await request(app)
+        .post("/api/appointments")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(appointmentPayload);
+
+      const res = await request(app)
+        .post("/api/appointments")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send(appointmentPayload);
 
       expect(res.status).toBe(400);
     });
@@ -297,6 +336,56 @@ describe("Appointment API Integration Tests", () => {
       expect(res.status).toBe(200);
       expect(res.body.success).toBe(true);
       expect(Array.isArray(res.body.data)).toBe(true);
+    });
+  });
+});
+
+describe("Payment API Integration Tests", () => {
+  let userToken: string;
+  let user: any;
+
+  beforeEach(async () => {
+    user = await UserModel.create({
+      fullName: "Pay User",
+      email: "pay@example.com",
+      phoneNumber: "+9779876543220",
+      password: await bcryptjs.hash("User@123", 10),
+      role: "user",
+    });
+    userToken = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      JWT_SECRET,
+      { expiresIn: "1d" },
+    );
+  });
+
+  describe("POST /api/payments/create-payment-intent", () => {
+    it("should return 401 without token", async () => {
+      const res = await request(app)
+        .post("/api/payments/create-payment-intent")
+        .send({ amount: 500 });
+
+      expect(res.status).toBe(401);
+    });
+
+    it("should return 400 for invalid amount", async () => {
+      const res = await request(app)
+        .post("/api/payments/create-payment-intent")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ amount: -100 });
+
+      expect(res.status).toBe(400);
+    });
+
+    it("should create payment intent successfully", async () => {
+      const res = await request(app)
+        .post("/api/payments/create-payment-intent")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ amount: 500, currency: "usd" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.clientSecret).toBe("pi_test_secret");
     });
   });
 });
