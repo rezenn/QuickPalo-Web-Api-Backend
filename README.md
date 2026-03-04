@@ -83,7 +83,7 @@ The backend follows a layered architecture:
 ## Run Backend
 
 ``` bash
-cd backend
+cd server
 npm install
 npm run dev
 ```
@@ -121,3 +121,4 @@ Main Collections: - Users - Appointments - Services - Transactions
 -   CI/CD pipeline
 -   Automated testing
 -   Analytics dashboard
+
