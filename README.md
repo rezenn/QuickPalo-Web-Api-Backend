@@ -20,7 +20,7 @@ monitor queues, and optimize workflow efficiency.
 ------------------------------------------------------------------------
 
 
-# ⚙ Backend -- Node.js + Express API
+# Backend -- Node.js + Express API
 
 ## Overview
 
@@ -92,7 +92,7 @@ Server runs at: http://localhost:5000
 
 ------------------------------------------------------------------------
 
-# 🗄 Database Design
+# Database Design
 
 MongoDB is used as a NoSQL document database.
 
@@ -113,16 +113,6 @@ Main Collections: - Users - Appointments - Services - Transactions
 
 ------------------------------------------------------------------------
 
-# Testing
-
-Backend: - Postman API testing - Manual integration testing
-
-Frontend: - Browser dev tools - Network request validation
-
-(Future: Jest + Supertest integration)
-
-------------------------------------------------------------------------
-
 # Future Improvements
 
 -   Real-time updates using WebSockets
@@ -131,12 +121,3 @@ Frontend: - Browser dev tools - Network request validation
 -   CI/CD pipeline
 -   Automated testing
 -   Analytics dashboard
-
-------------------------------------------------------------------------
-
-## Author
-
-Name: \[Rijen Khadgi\]\
-Student ID: \[14811623\]\
-Module: \[ST6003CEM Web API Development\]\
-Date: \[March, 2026\]
