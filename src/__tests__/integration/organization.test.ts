@@ -91,6 +91,7 @@ describe("Organization Details API", () => {
     });
   });
 
+
   describe("PUT /api/organizations/details", () => {
     beforeEach(async () => {
       await OrganizationModel.create({
