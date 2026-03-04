@@ -154,7 +154,7 @@ export class UserService {
                       $cond: {
                         if: { $ifNull: ["$$dept._id", false] },
                         then: "$$dept._id",
-                        else: { $toString: "$$dept._id" }, 
+                        else: { $toString: "$$dept._id" },
                       },
                     },
                   },
@@ -177,7 +177,7 @@ export class UserService {
           contactEmail: 1,
           contactPhone: 1,
           workingHours: 1,
-          departments: 1, 
+          departments: 1,
           fees: 1,
           appointmentDuration: 1,
           advanceBookingDays: 1,

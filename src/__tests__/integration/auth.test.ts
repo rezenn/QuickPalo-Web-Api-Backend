@@ -4,8 +4,6 @@ import jwt from "jsonwebtoken";
 import bcryptjs from "bcryptjs";
 import app from "../../app";
 import { UserModel } from "../../models/user.model";
-import { OrganizationModel } from "../../models/organization.model";
-import { connectDb } from "../../database/mongodb";
 import { JWT_SECRET } from "../../configs";
 
 describe("Authentication Integration Tests", () => {
